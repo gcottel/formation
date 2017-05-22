@@ -9,3 +9,5 @@
 
     <input type="submit" value="Connexion" />
 </form>
+
+<li> <a href="/admin/signIn">SignIn</li>

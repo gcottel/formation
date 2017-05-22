@@ -24,6 +24,7 @@
                 <li><a href="/admin/">Admin</a></li>
                 <li><a href="/admin/news-insert.html">Ajouter une news</a></li>
                 <li> <a href="/admin/logOut">LogOut</li>
+                <li> <a href="/admin/signIn">SignIn</li>
             <?php } ?>
         </ul>
     </nav>

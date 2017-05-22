@@ -29,7 +29,7 @@ class UserFormBuilder extends FormBuilder
                     new MaxLengthValidator('Le mot de passe spécifié est trop long (30 caractères maximum)', 30),
                     new NotNullValidator('Merci de spécifier le mot de passe'),
                 ],
-            ]))
+            ]))/**
             ->add(new StringField([
                 'label' => 'Password confirmation',
                 'name' => 'passwordConfirmation',
@@ -38,10 +38,10 @@ class UserFormBuilder extends FormBuilder
                 'validators' => [
                     new EqualsValidator( 'Mots de passes différents', $this->form->getField( 'password' ) ),
                 ],
-            ]))
+            ]))*/
             ->add(new StringField([
                 'label' => 'FirstName',
-                'name' => 'firsName',
+                'name' => 'firstName',
                 'maxLength' => 20,
                 'validators' => [
                     new MaxLengthValidator('Le prénom spécifié est trop long (20 caractères maximum)', 20),
@@ -66,19 +66,20 @@ class UserFormBuilder extends FormBuilder
                     new MaxLengthValidator('Le mail spécifié est trop long (50 caractères maximum)', 50),
                     new NotNullValidator('Merci de spécifier le mail'),
                 ],
-            ]))
+            ]))/**
             ->add(new StringField([
                 'label' => 'Email confirmation',
                 'name' => 'emailConfirmation',
                 'type' => 'email',
                 'maxLength' => 50,
                 'validators' => [
-                    new EqualsValidator( 'Mots de passes différents', $this->form->getField( 'email' ) ),
+                    new EqualsValidator( 'mails différents', $this->form->getField( 'email' ) ),
                 ],
-            ]))
-            ->add(new \DateTime([
+            ]))*/
+            /**
+            ->add(new StringField([
                 'label' => 'birthDate',
                 'name' => 'birthDate',
-            ]))
+            ]))*/;
     }
 }

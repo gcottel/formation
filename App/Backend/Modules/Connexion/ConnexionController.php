@@ -39,7 +39,7 @@ class ConnexionController extends BackController
 
     public function executeDelete(HTTPRequest $request)
     {
-        $newsId = $request->getData('id');
+        $userId = $request->getData('id');
 
         $this->managers->getManagerOf('User')->delete($userId);
 
@@ -67,31 +67,36 @@ class ConnexionController extends BackController
     {
         if ($request->method() == 'POST')
         {
-            $news = new User([
-                'auteur' => $request->postData('auteur'),
-                'titre' => $request->postData('titre'),
-                'contenu' => $request->postData('contenu')
+            $user = new User([
+                'login' => $request->postData('login'),
+                'password' => $request->postData('password'),
+                'passwordVerfication' => $request->postData('passwordVerification'),
+                'email' => $request->postData('email'),
+                'emailVerification' => $request->postData('emailVerification'),
+                'firstName' => $request->postData('firstName'),
+                'lastName' => $request->postData('lastName'),
+                'birthDate' => $request->postData('birthDate')
             ]);
 
             if ($request->getExists('id'))
             {
-                $news->setId($request->getData('id'));
+                $user->setId($request->getData('id'));
             }
         }
         else
         {
-            // L'identifiant de la news est transmis si on veut la modifier
+            // L'identifiant de l'utilisateur est transmis si on veut le modifier
             if ($request->getExists('id'))
             {
-                $news = $this->managers->getManagerOf('News')->getUnique($request->getData('id'));
+                $user = $this->managers->getManagerOf('User')->getUnique($request->getData('id'));
             }
             else
             {
-                $news = new News;
+                $user = new User;
             }
         }
 
-        $formBuilder = new NewsFormBuilder($news);
+        $formBuilder = new UserFormBuilder($user);
         $formBuilder->build();
 
         $form = $formBuilder->form();
@@ -100,7 +105,7 @@ class ConnexionController extends BackController
 
         if ($formHandler->process())
         {
-            $this->app->user()->setFlash($news->isNew() ? 'L\'utilisateur a bien été ajouté !' : 'L\'utilisateur a bien été modifié !');
+            $this->app->user()->setFlash($user->isNew() ? 'L\'utilisateur a bien été ajouté !' : 'L\'utilisateur a bien été modifié !');
 
             $this->app->httpResponse()->redirect('/admin/');
         }

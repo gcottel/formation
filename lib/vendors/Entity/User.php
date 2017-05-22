@@ -41,7 +41,7 @@ class User extends Entity
         $this->login = $login;
     }
 
-    public function setPassword($login)
+    public function setPassword($password)
     {
         if (!is_string($password) || empty($password))
         {
@@ -81,7 +81,7 @@ class User extends Entity
         $this->email = $email;
     }
 
-    public function setDateAjout(\DateTime $birthDate)
+    public function setbirthDate($birthDate)
     {
         $this->birthDate = $birthDate;
     }
@@ -133,7 +133,7 @@ class User extends Entity
         return $this->dateModif;
     }
 
-    public function datePassword()
+    public function Password()
     {
         return $this->password;
     }
