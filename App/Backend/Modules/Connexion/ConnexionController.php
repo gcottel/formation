@@ -3,6 +3,9 @@ namespace App\Backend\Modules\Connexion;
 
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
+use \Entity\User;
+use \FormBuilder\UserFormBuilder;
+use \OCFram\FormHandler;
 
 class ConnexionController extends BackController
 {
@@ -31,5 +34,77 @@ class ConnexionController extends BackController
     {
         $this->app->user()->setAuthenticated(false);
         $this->app->httpResponse()->redirect('.');
+    }
+
+
+    public function executeDelete(HTTPRequest $request)
+    {
+        $newsId = $request->getData('id');
+
+        $this->managers->getManagerOf('User')->delete($userId);
+
+        $this->app->user()->setFlash('L\'utilisateur a bien été supprimée !');
+
+        $this->app->httpResponse()->redirect('.');
+    }
+
+
+    public function executeInsert(HTTPRequest $request)
+    {
+        $this->processForm($request);
+
+        $this->page->addVar('title', 'Ajout d\'un utilisateur');
+    }
+
+    public function executeUpdate(HTTPRequest $request)
+    {
+        $this->processForm($request);
+
+        $this->page->addVar('title', 'Modification d\'un utilisateur');
+    }
+
+    public function processForm(HTTPRequest $request)
+    {
+        if ($request->method() == 'POST')
+        {
+            $news = new User([
+                'auteur' => $request->postData('auteur'),
+                'titre' => $request->postData('titre'),
+                'contenu' => $request->postData('contenu')
+            ]);
+
+            if ($request->getExists('id'))
+            {
+                $news->setId($request->getData('id'));
+            }
+        }
+        else
+        {
+            // L'identifiant de la news est transmis si on veut la modifier
+            if ($request->getExists('id'))
+            {
+                $news = $this->managers->getManagerOf('News')->getUnique($request->getData('id'));
+            }
+            else
+            {
+                $news = new News;
+            }
+        }
+
+        $formBuilder = new NewsFormBuilder($news);
+        $formBuilder->build();
+
+        $form = $formBuilder->form();
+
+        $formHandler = new FormHandler($form, $this->managers->getManagerOf('User'), $request);
+
+        if ($formHandler->process())
+        {
+            $this->app->user()->setFlash($news->isNew() ? 'L\'utilisateur a bien été ajouté !' : 'L\'utilisateur a bien été modifié !');
+
+            $this->app->httpResponse()->redirect('/admin/');
+        }
+
+        $this->page->addVar('form', $form->createView());
     }
 }
