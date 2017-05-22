@@ -29,6 +29,7 @@ class NewsManagerPDO extends NewsManager
     public function getList($debut = -1, $limite = -1)
     {
         $sql = 'SELECT id, auteur, titre, contenu, dateAjout, dateModif FROM news ORDER BY id DESC';
+        date_default_timezone_set('Europe/Paris');
 
         if ($debut != -1 || $limite != -1)
         {
@@ -53,6 +54,7 @@ class NewsManagerPDO extends NewsManager
 
     public function getUnique($id)
     {
+        date_default_timezone_set('Europe/Paris');
         $requete = $this->dao->prepare('SELECT id, auteur, titre, contenu, dateAjout, dateModif FROM news WHERE id = :id');
         $requete->bindValue(':id', (int) $id, \PDO::PARAM_INT);
         $requete->execute();

@@ -151,4 +151,4 @@ class SplClassLoader
       require ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName;
     }
   }
-}s
+}

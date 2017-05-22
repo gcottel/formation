@@ -14,7 +14,16 @@
 <div id="wrap">
     <header>
         <h1><a href="/">Mon super site</a></h1>
-        <p>Comment ça, il n'y a presque rien ?</p>
+        <p>Comment ça, il n'y a presque rien ?
+        <br>
+        <?php
+        require_once 'C:\Users\gcottel\Desktop\UwAmp\www\formation\vendor\mobiledetect\mobiledetectlib\Mobile_Detect.php';
+        $detect = new Mobile_Detect;
+        $deviceType = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
+        echo ('Vous utilisez un '.$deviceType);
+        ?></p>
+
+
     </header>
 
     <nav>

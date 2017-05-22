@@ -7,7 +7,6 @@ abstract class BackController extends ApplicationComponent
     protected $module = '';
     protected $page = null;
     protected $view = '';
-
     protected $managers = null;
 
     public function __construct(Application $app, $module, $action)
@@ -15,29 +14,6 @@ abstract class BackController extends ApplicationComponent
         parent::__construct($app);
 
         $this->managers = new Managers('PDO', PDOFactory::getMysqlConnexion());
-        $this->page = new Page($app);
-
-        $this->setModule($module);
-        $this->setAction($action);
-        $this->setView($action);
-    }
-
-    public function setView($view)
-    {
-        if (!is_string($view) || empty($view))
-        {
-            throw new \InvalidArgumentException('La vue doit être une chaine de caractères valide');
-        }
-
-        $this->view = $view;
-
-        $this->page->setContentFile(__DIR__.'/../../App/'.$this->app->name().'/Modules/'.$this->module.'/Views/'.$this->view.'.php');
-    }
-
-    public function __construct(Application $app, $module, $action)
-    {
-        parent::__construct($app);
-
         $this->page = new Page($app);
 
         $this->setModule($module);
@@ -90,5 +66,7 @@ abstract class BackController extends ApplicationComponent
         }
 
         $this->view = $view;
+
+        $this->page->setContentFile(__DIR__.'/../../App/'.$this->app->name().'/Modules/'.$this->module.'/Views/'.$this->view.'.php');
     }
 }

@@ -7,6 +7,8 @@ use \Entity\Comment;
 use \FormBuilder\CommentFormBuilder;
 use \OCFram\FormHandler;
 
+//require \Mobile_Detect;
+
 class NewsController extends BackController
 {
     public function executeIndex(HTTPRequest $request)
@@ -85,4 +87,12 @@ class NewsController extends BackController
         $this->page->addVar('form', $form->createView());
         $this->page->addVar('title', 'Ajout d\'un commentaire');
     }
+
+    /**public function deviceDetection()
+    {
+        $detect = new Mobile_Detect;
+        $deviceType = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
+
+        return $deviceType;
+    }*/
 }
