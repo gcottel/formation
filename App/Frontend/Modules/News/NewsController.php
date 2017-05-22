@@ -88,11 +88,4 @@ class NewsController extends BackController
         $this->page->addVar('title', 'Ajout d\'un commentaire');
     }
 
-    /**public function deviceDetection()
-    {
-        $detect = new Mobile_Detect;
-        $deviceType = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
-
-        return $deviceType;
-    }*/
 }
