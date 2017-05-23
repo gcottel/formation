@@ -7,6 +7,7 @@ use \Entity\User;
 use \FormBuilder\UserFormBuilder;
 use \OCFram\FormHandler;
 
+
 class ConnexionController extends BackController
 {
     public function executeIndex(HTTPRequest $request)
@@ -18,14 +19,26 @@ class ConnexionController extends BackController
             $login = $request->postData('login');
             $password = $request->postData('password');
 
-            if ($login == $this->app->config()->get('login') && $password == $this->app->config()->get('pass'))
+            $manager = $this->managers->getManagerOf( 'User' );
+
+            if ( $id = $manager->getIdByLoginOrEmail( $login ) )
             {
-                $this->app->user()->setAuthenticated(true);
-                $this->app->httpResponse()->redirect('.');
+
+                $user = $manager->getUnique($id);
+                if ($password == $user->password())
+                {
+                    $this->app->user()->setAuthenticated(true);
+                    $this->app->user()->setFlash('Connexion réussie');
+                    $this->app->httpResponse()->redirect('.');
+                }
+                else
+                {
+                    $this->app->user()->setFlash('Le mot de passe est incorrect.');
+                }
             }
             else
             {
-                $this->app->user()->setFlash('Le pseudo ou le mot de passe est incorrect.');
+                $this->app->user()->setFlash('Le login est incorrect.');
             }
         }
     }

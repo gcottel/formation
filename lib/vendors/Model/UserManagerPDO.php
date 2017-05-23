@@ -58,8 +58,7 @@ class UserManagerPDO extends UserManager
 
     public function getUnique($id)
     {
-        date_default_timezone_set('Europe/Paris');
-        $requete = $this->dao->prepare('SELECT id, firstName, lastName, birthDate, dateAjout, dateModif FROM user WHERE id = :id');
+        $requete = $this->dao->prepare('SELECT id, login, password, firstName, lastName, birthDate, dateAjout, dateModif FROM user WHERE id = :id');
         $requete->bindValue(':id', (int) $id, \PDO::PARAM_INT);
         $requete->execute();
 
@@ -67,15 +66,21 @@ class UserManagerPDO extends UserManager
 
         if ($user = $requete->fetch())
         {
-            $user->setbirthDate(new \DateTime($user->birthDate()));
-            $user->setDateAjout(new \DateTime($user->dateAjout()));
-            $user->setDateModif(new \DateTime($user->dateModif()));
-
             return $user;
         }
 
         return null;
     }
+
+    public function getIdByLoginOrEmail( $login )
+    {
+        		$requete = $this->dao->prepare( 'SELECT id FROM user WHERE login = :login OR email = :email' );
+        		$requete->bindValue( ':login', $login );
+        		$requete->bindValue( ':email', $login );
+        		$requete->execute();
+
+        		return $requete->fetch();
+ 	}
 
     protected function modify(User $user)
     {

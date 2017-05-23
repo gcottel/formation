@@ -60,6 +60,8 @@ abstract class UserManager extends Manager
      */
     abstract public function getUnique($id);
 
+    abstract public function getIdByLoginOrEmail( $login );
+
     /**
      * Méthode permettant de modifier une news.
      * @param $news news la news à modifier
