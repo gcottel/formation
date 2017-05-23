@@ -3,6 +3,7 @@ namespace FormBuilder;
 
 use \OCFram\FormBuilder;
 use \OCFram\StringField;
+use \OCFram\DatetimeField;
 use \OCFram\TextField;
 use \OCFram\MaxLengthValidator;
 use \OCFram\NotNullValidator;
@@ -76,10 +77,10 @@ class UserFormBuilder extends FormBuilder
                     new EqualsValidator( 'mails différents', $this->form->getField( 'email' ) ),
                 ],
             ]))*/
-            /**
-            ->add(new StringField([
+
+            ->add(new DatetimeField([
                 'label' => 'birthDate',
                 'name' => 'birthDate',
-            ]))*/;
+            ]));
     }
 }

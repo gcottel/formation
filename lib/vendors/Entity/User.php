@@ -23,6 +23,7 @@ class User extends Entity
     const DATEAJOUT_INVALIDE = 7;
     const DATEMODIF_INVALIDE = 8;
 
+
     public function isValid()
     {
         return !(empty($this->login) || empty($this->password));
@@ -88,6 +89,7 @@ class User extends Entity
 
     public function setDateAjout(\DateTime $dateAjout)
     {
+
         $this->dateAjout = $dateAjout;
     }
 

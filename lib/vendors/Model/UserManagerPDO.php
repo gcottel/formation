@@ -14,7 +14,7 @@ class UserManagerPDO extends UserManager
         $requete->bindValue(':firstName', $user->firstName());
         $requete->bindValue(':lastName', $user->lastName());
         $requete->bindValue(':email', $user->email());
-        $requete->bindValue(':birthDate', $birthDate->birthDate());
+        $requete->bindValue(':birthDate', $user->birthDate());
 
         $requete->execute();
     }
@@ -46,6 +46,7 @@ class UserManagerPDO extends UserManager
 
         foreach ($listeUser as $user)
         {
+            $user->setbirthDate(new \DateTime($user->birthDate()));
             $user->setDateAjout(new \DateTime($user->dateAjout()));
             $user->setDateModif(new \DateTime($user->dateModif()));
         }
@@ -66,6 +67,7 @@ class UserManagerPDO extends UserManager
 
         if ($user = $requete->fetch())
         {
+            $user->setbirthDate(new \DateTime($user->birthDate()));
             $user->setDateAjout(new \DateTime($user->dateAjout()));
             $user->setDateModif(new \DateTime($user->dateModif()));
 
@@ -84,7 +86,7 @@ class UserManagerPDO extends UserManager
         $requete->bindValue(':firstName', $user->firstName());
         $requete->bindValue(':lastName', $user->lastName());
         $requete->bindValue(':email', $user->email());
-        $requete->bindValue(':birthDate', $birthDate->birthDate());
+        $requete->bindValue(':birthDate', $user->birthDate());
 
         $requete->execute();
     }

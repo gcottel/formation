@@ -23,8 +23,8 @@
             <?php if ($user->isAuthenticated()) { ?>
                 <li><a href="/admin/">Admin</a></li>
                 <li><a href="/admin/news-insert.html">Ajouter une news</a></li>
-                <li> <a href="/admin/logOut">LogOut</li>
-                <li> <a href="/admin/signIn.html">SignIn</li>
+                <li> <a href="/admin/logOut">LogOut</a></li>
+                <li> <a href="/admin/signIn.html">SignIn</a></li>
             <?php } ?>
         </ul>
     </nav>
