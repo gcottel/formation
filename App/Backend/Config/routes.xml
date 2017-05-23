@@ -7,7 +7,7 @@
     <route url="/admin/comment-update-([0-9]+)\.html" module="News" action="updateComment" vars="id" ></route>
     <route url="/admin/comment-delete-([0-9]+)\.html" module="News" action="deleteComment" vars="id" ></route>
     <route url="/admin/logOut" module="Connexion" action="logOut" ></route>
-    <route url="/admin/signIn" module="Connexion" action="insert" ></route>
+    <route url="/admin/signIn\.html" module="Connexion" action="insert" ></route>
 
 
 </routes>
