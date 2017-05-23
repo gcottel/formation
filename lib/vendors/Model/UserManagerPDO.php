@@ -74,13 +74,24 @@ class UserManagerPDO extends UserManager
 
     public function getIdByLoginOrEmail( $login )
     {
-        		$requete = $this->dao->prepare( 'SELECT id FROM user WHERE login = :login OR email = :email' );
-        		$requete->bindValue( ':login', $login );
-        		$requete->bindValue( ':email', $login );
-        		$requete->execute();
+        $requete = $this->dao->prepare( 'SELECT id FROM user WHERE login = :login OR email = :email' );
+        $requete->bindValue( ':login', $login );
+        $requete->bindValue( ':email', $login );
+        $requete->execute();
 
-        		return $requete->fetch();
- 	}
+        return $requete->fetch();
+    }
+
+    public function getPasswordByLoginOrEmail( $login )
+    {
+        $requete = $this->dao->prepare( 'SELECT password FROM user WHERE login = :login OR email = :email' );
+        $requete->bindValue( ':login', $login );
+        $requete->bindValue( ':email', $login );
+        $requete->execute();
+
+
+        return $requete->fetch();
+    }
 
     protected function modify(User $user)
     {
