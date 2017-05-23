@@ -16,6 +16,8 @@ class EqualsValidator extends Validator {
     }
 
     public function isValid( $value ) {
+
         return $value == $this->value;
     }
 }
+

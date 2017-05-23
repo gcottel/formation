@@ -9,6 +9,7 @@ use \OCFram\PasswordField;
 use \OCFram\MailField;
 use \OCFram\MaxLengthValidator;
 use \OCFram\NotNullValidator;
+use \OCFram\EqualsValidator;
 
 class UserFormBuilder extends FormBuilder
 {
@@ -31,16 +32,15 @@ class UserFormBuilder extends FormBuilder
                     new MaxLengthValidator('Le mot de passe spécifié est trop long (30 caractères maximum)', 30),
                     new NotNullValidator('Merci de spécifier le mot de passe'),
                 ],
-            ]))/**
-            ->add(new StringField([
+            ]))
+            ->add(new PasswordField([
                 'label' => 'Password confirmation',
                 'name' => 'passwordConfirmation',
-                'type' => 'password',
                 'maxLength' => 30,
                 'validators' => [
-                    new EqualsValidator( 'Mots de passes différents', $this->form->getField( 'password' ) ),
+                    new EqualsValidator( 'les mots de passes sont différents', $this->form->getField( 'password' ) ),
                 ],
-            ]))*/
+            ]))
             ->add(new StringField([
                 'label' => 'FirstName',
                 'name' => 'firstName',
@@ -67,8 +67,8 @@ class UserFormBuilder extends FormBuilder
                     new MaxLengthValidator('Le mail spécifié est trop long (50 caractères maximum)', 50),
                     new NotNullValidator('Merci de spécifier le mail'),
                 ],
-            ]))/**
-            ->add(new StringField([
+            ]))
+            ->add(new MailField([
                 'label' => 'Email confirmation',
                 'name' => 'emailConfirmation',
                 'type' => 'email',
@@ -76,7 +76,7 @@ class UserFormBuilder extends FormBuilder
                 'validators' => [
                     new EqualsValidator( 'mails différents', $this->form->getField( 'email' ) ),
                 ],
-            ]))*/
+            ]))
 
             ->add(new DatetimeField([
                 'label' => 'birthDate',
