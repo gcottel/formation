@@ -5,6 +5,8 @@ use \OCFram\FormBuilder;
 use \OCFram\StringField;
 use \OCFram\DatetimeField;
 use \OCFram\TextField;
+use \OCFram\PasswordField;
+use \OCFram\MailField;
 use \OCFram\MaxLengthValidator;
 use \OCFram\NotNullValidator;
 
@@ -21,10 +23,9 @@ class UserFormBuilder extends FormBuilder
                 new NotNullValidator('Merci de spécifier login'),
             ],
         ]))
-            ->add(new StringField([
+            ->add(new PasswordField([
                 'label' => 'Password',
                 'name' => 'password',
-                'type' => 'password',
                 'maxLength' => 30,
                 'validators' => [
                     new MaxLengthValidator('Le mot de passe spécifié est trop long (30 caractères maximum)', 30),
@@ -58,10 +59,9 @@ class UserFormBuilder extends FormBuilder
                     new NotNullValidator('Merci de spécifier le nom'),
                 ],
             ]))
-            ->add(new StringField([
+            ->add(new MailField([
                 'label' => 'Email',
                 'name' => 'email',
-                'type' => 'email',
                 'maxLength' => 50,
                 'validators' => [
                     new MaxLengthValidator('Le mail spécifié est trop long (50 caractères maximum)', 50),
