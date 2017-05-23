@@ -1,6 +1,7 @@
 <?php
 namespace App\Frontend\Modules\Connexion;
 
+use Model\UserManager;
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
 use \Entity\User;
@@ -17,15 +18,16 @@ class ConnexionController extends BackController
         {
             $login = $request->postData('login');
             $password = $request->postData('password');
-
+			/** @var UserManager $manager */
             $manager = $this->managers->getManagerOf( 'User' );
 
-            if ( $p = $manager->getPasswordByLoginOrEmail( $login ) )
+            if ( $User = $manager->getUserByLoginOrEmail( $login ) )
             {
 
-                if ($password == $p[0])
+                if ($password == $User->Password())
                 {
                     $this->app->user()->setAuthenticated(true);
+                    $this->app->user()->setAttribute('User', $User );
                     $this->app->user()->setFlash('Connexion réussie');
                     $this->app->httpResponse()->redirect('.');
                 }

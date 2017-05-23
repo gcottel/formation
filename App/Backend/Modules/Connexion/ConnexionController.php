@@ -47,7 +47,9 @@ class ConnexionController extends BackController
 
     public function executelogOut(HTTPRequest $request)
     {
-        $this->app->user()->setAuthenticated(false);
+        //$this->app->user()->setAuthenticated(false);
+        session_unset();
+        session_destroy();
         $this->app->httpResponse()->redirect('.');
     }
 

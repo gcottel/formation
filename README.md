@@ -15,3 +15,9 @@
 
 ## 2.1 - Two types of user
 * The users who subscribe with subscription form are now simple writers. They are not a full administrator and they can only edit their news.
+
+### TODO:
+* unicité login
+* mynews
+* auteur news = login de celui qui l'écrit
+* test du role pour admin

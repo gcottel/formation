@@ -13,5 +13,6 @@
     <route url="/logOut" module="Connexion" action="logOut" ></route>
     <route url="/connexion\.html" module="Connexion" action="index" ></route>
     <route url="/signIn\.html" module="Connexion" action="insert" ></route>
+    <route url="/myNews" module="News" action="IndexMyNews" ></route>
 
 </routes>

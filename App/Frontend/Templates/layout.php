@@ -35,6 +35,7 @@
                 <li> <a href="/connexion.html">Connexion</a></li>
             <?php } ?>
             <?php if ($user->isAuthenticated()) { ?>
+                <li> <a href="/myNews">MyNews</a></li>
                 <li><a href="/news-insert.html">Ajouter une news</a></li>
                 <li> <a href="/logOut">LogOut</a></li>
             <?php } ?>

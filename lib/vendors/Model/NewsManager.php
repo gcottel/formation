@@ -52,6 +52,7 @@ abstract class NewsManager extends Manager
      * @return array La liste des news. Chaque entrée est une instance de News.
      */
     abstract public function getList($debut = -1, $limite = -1);
+    abstract public function getListUser($debut = -1, $limite = -1, $user);
 
     /**
      * Méthode retournant une news précise.

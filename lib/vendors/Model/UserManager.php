@@ -1,6 +1,7 @@
 <?php
 namespace Model;
 
+use Entity\News;
 use \OCFram\Manager;
 use \Entity\User;
 
@@ -61,7 +62,13 @@ abstract class UserManager extends Manager
     abstract public function getUnique($id);
 
     abstract public function getIdByLoginOrEmail( $login );
-    abstract public function getPasswordByLoginOrEmail( $login );
+	
+	/**
+	 * @param $login
+	 *
+	 * @return User|null
+	 */
+    abstract public function getUserByLoginOrEmail( $login );
 
     /**
      * Méthode permettant de modifier une news.

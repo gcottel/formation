@@ -52,6 +52,33 @@ class NewsManagerPDO extends NewsManager
         return $listeNews;
     }
 
+    public function getListUser($debut = -1, $limite = -1, $login)
+    {
+        $sql = 'SELECT id, auteur, titre, contenu, dateAjout, dateModif FROM news WHERE auteur = :auteur ORDER BY id DESC';
+        date_default_timezone_set('Europe/Paris');
+
+        if ($debut != -1 || $limite != -1)
+        {
+            $sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+        }
+
+        $requete = $this->dao->prepare($sql);
+        $requete->bindValue(':auteur', $login);
+        $requete->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\News');
+
+        $listeNews = $requete->fetchAll();
+
+        foreach ($listeNews as $news)
+        {
+            $news->setDateAjout(new \DateTime($news->dateAjout()));
+            $news->setDateModif(new \DateTime($news->dateModif()));
+        }
+
+        $requete->closeCursor();
+
+        return $listeNews;
+    }
+
     public function getUnique($id)
     {
         date_default_timezone_set('Europe/Paris');

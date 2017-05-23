@@ -6,6 +6,9 @@ use \OCFram\HTTPRequest;
 use \Entity\Comment;
 use \FormBuilder\CommentFormBuilder;
 use \OCFram\FormHandler;
+use \Entity\News;
+use \FormBuilder\NewsFormUserBuilder;
+
 
 //require \Mobile_Detect;
 
@@ -86,6 +89,75 @@ class NewsController extends BackController
         $this->page->addVar('comment', $comment);
         $this->page->addVar('form', $form->createView());
         $this->page->addVar('title', 'Ajout d\'un commentaire');
+    }
+
+    public function executeIndexMyNews(HTTPRequest $request)
+    {
+        $this->page->addVar('title', 'Gestion des news');
+
+        $manager = $this->managers->getManagerOf('News');
+
+        $this->page->addVar('listeNews', $manager->getListUser(-1,-1,$this->app->user()->getAttribute('User')->login()));
+        $this->page->addVar('nombreNews', $manager->count());
+    }
+
+    public function executeInsert(HTTPRequest $request)
+    {
+        $this->processForm($request);
+
+        $this->page->addVar('title', 'Ajout d\'une news');
+    }
+
+    public function executeUpdate(HTTPRequest $request)
+    {
+        $this->processForm($request);
+
+        $this->page->addVar('title', 'Modification d\'une news');
+    }
+
+    public function processForm(HTTPRequest $request)
+    {
+        if ($request->method() == 'POST')
+        {
+            $news = new News([
+                'auteur' => $this->app->user()->getAttribute('User')->login(),
+                'titre' => $request->postData('titre'),
+                'contenu' => $request->postData('contenu')
+            ]);
+
+            if ($request->getExists('id'))
+            {
+                $news->setId($request->getData('id'));
+            }
+        }
+        else
+        {
+            // L'identifiant de la news est transmis si on veut la modifier
+            if ($request->getExists('id'))
+            {
+                $news = $this->managers->getManagerOf('News')->getUnique($request->getData('id'));
+            }
+            else
+            {
+                $news = new News;
+            }
+        }
+
+        $formBuilder = new NewsFormUserBuilder($news);
+        $formBuilder->build();
+
+        $form = $formBuilder->form();
+
+        $formHandler = new FormHandler($form, $this->managers->getManagerOf('News'), $request);
+
+        if ($formHandler->process())
+        {
+            $this->app->user()->setFlash($news->isNew() ? 'La news a bien été ajoutée !' : 'La news a bien été modifiée !');
+
+            $this->app->httpResponse()->redirect('/admin/');
+        }
+
+        $this->page->addVar('form', $form->createView());
     }
 
 }
