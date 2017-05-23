@@ -12,7 +12,8 @@ class User extends Entity
         $email,
         $birthDate,
         $dateAjout,
-        $dateModif;
+        $dateModif,
+        $role;
 
     const LOGIN_INVALIDE = 1;
     const PASSWORD_INVALIDE = 2;
@@ -22,6 +23,7 @@ class User extends Entity
     const BIRTHDATE_INVALIDE = 6;
     const DATEAJOUT_INVALIDE = 7;
     const DATEMODIF_INVALIDE = 8;
+    const ROLE_INVALIDE = 9;
 
 
     public function isValid()
@@ -40,6 +42,16 @@ class User extends Entity
         }
 
         $this->login = $login;
+    }
+
+    public function setRole($role)
+    {
+        if (!is_string($role) || empty($role))
+        {
+            $this->erreurs[] = self::ROLE_INVALIDE;
+        }
+
+        $this->role = $role;
     }
 
     public function setPassword($password)
@@ -101,6 +113,11 @@ class User extends Entity
     // GETTERS //
 
     public function login()
+    {
+        return $this->login;
+    }
+
+    public function role()
     {
         return $this->login;
     }

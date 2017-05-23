@@ -9,5 +9,4 @@
     <route url="/admin/logOut" module="Connexion" action="logOut" ></route>
     <route url="/admin/signIn\.html" module="Connexion" action="insert" ></route>
 
-
 </routes>

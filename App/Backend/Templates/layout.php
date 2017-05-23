@@ -19,7 +19,6 @@
 
     <nav>
         <ul>
-            <li><a href="/">Accueil</a></li>
             <?php if ($user->isAuthenticated()) { ?>
                 <li><a href="/admin/">Admin</a></li>
                 <li><a href="/admin/news-insert.html">Ajouter une news</a></li>

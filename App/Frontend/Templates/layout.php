@@ -29,10 +29,14 @@
     <nav>
         <ul>
             <li><a href="/">Accueil</a></li>
+
+            <?php if (!$user->isAuthenticated()) { ?>
+                <li> <a href="/signIn.html">SignIn</a></li>
+                <li> <a href="/connexion.html">Connexion</a></li>
+            <?php } ?>
             <?php if ($user->isAuthenticated()) { ?>
-                <li><a href="/admin/">Admin</a></li>
-                <li><a href="/admin/news-insert.html">Ajouter une news</a></li>
-                <li> <a href="/admin/logOut">LogOut</li>
+                <li><a href="/news-insert.html">Ajouter une news</a></li>
+                <li> <a href="/logOut">LogOut</a></li>
             <?php } ?>
         </ul>
     </nav>
