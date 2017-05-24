@@ -1,6 +1,7 @@
 <?php
 namespace FormBuilder;
 
+use OCFram\ExistValidator;
 use \OCFram\FormBuilder;
 use \OCFram\StringField;
 use \OCFram\DatetimeField;
@@ -22,6 +23,7 @@ class UserFormBuilder extends FormBuilder
             'validators' => [
                 new MaxLengthValidator('Le login spécifié est trop long (20 caractères maximum)', 20),
                 new NotNullValidator('Merci de spécifier login'),
+				//new ExistValidator('Login déja utilisé', $this->form->getField( 'login' )),
             ],
         ]))
             ->add(new PasswordField([
@@ -66,6 +68,7 @@ class UserFormBuilder extends FormBuilder
                 'validators' => [
                     new MaxLengthValidator('Le mail spécifié est trop long (50 caractères maximum)', 50),
                     new NotNullValidator('Merci de spécifier le mail'),
+					//new ExistValidator('Login déja utilisé', $this->form->getField( 'email' )),
                 ],
             ]))
             ->add(new MailField([
