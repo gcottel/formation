@@ -20,9 +20,10 @@
 * Try to enter a very long text in title and text of a News and observe the result. (Long text without space)
 * Fix visual problem by adding some CSS rules.
 
-# 4 - Fix SQL Injection 
+# 4 - Fix SQL Injection &#10004;
 * If you have good memory, you know that SQL Injection mean ! 
 * Remove all SQL Injection vulnerabilities. 
 
-### :exclamation: TODO:
-* nothing yet
+# 5 - Fix JavaScript Injection 
+* Google is your best friend.
+* Remove all JavaScript Injection vulnerabilities. 
