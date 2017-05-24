@@ -7,12 +7,12 @@ class UserManagerPDO extends UserManager {
 	protected function add( User $user ) {
 		$requete = $this->dao->prepare( 'INSERT INTO user SET login = :login, password = :password, firstName = :firstName, lastName = :lastName, email = :email, birthDate = :birthDate, dateAjout = NOW(), dateModif = NOW()' );
 		
-		$requete->bindValue( ':login', $user->login() );
-		$requete->bindValue( ':password', $user->password() );
-		$requete->bindValue( ':firstName', $user->firstName() );
-		$requete->bindValue( ':lastName', $user->lastName() );
-		$requete->bindValue( ':email', $user->email() );
-		$requete->bindValue( ':birthDate', $user->birthDate() );
+		$requete->bindValue( ':login', $user->login(), \PDO::PARAM_STR);
+		$requete->bindValue( ':password', $user->password(),\PDO::PARAM_STR);
+		$requete->bindValue( ':firstName', $user->firstName(),\PDO::PARAM_STR);
+		$requete->bindValue( ':lastName', $user->lastName(),\PDO::PARAM_STR);
+		$requete->bindValue( ':email', $user->email(),\PDO::PARAM_STR);
+		$requete->bindValue( ':birthDate', $user->birthDate(),\PDO::PARAM_STR);
 		
 		$requete->execute();
 	}
@@ -66,8 +66,8 @@ class UserManagerPDO extends UserManager {
 	public function getIdByLoginOrEmail( $login )
 	{
 		$requete = $this->dao->prepare( 'SELECT id FROM user WHERE login = :login OR email = :email' );
-		$requete->bindValue( ':login', $login );
-		$requete->bindValue( ':email', $login );
+		$requete->bindValue( ':login', $login, \PDO::PARAM_STR);
+		$requete->bindValue( ':email', $login, \PDO::PARAM_STR);
 		$requete->execute();
 		
 		return $requete->fetch();
@@ -76,8 +76,8 @@ class UserManagerPDO extends UserManager {
 	public function getRoleByLoginOrEmail( $login )
 	{
 		$requete = $this->dao->prepare( 'SELECT MMC_fk_MMY FROM user WHERE login = :login OR email = :email' );
-		$requete->bindValue( ':login', $login );
-		$requete->bindValue( ':email', $login );
+		$requete->bindValue( ':login', $login, \PDO::PARAM_STR);
+		$requete->bindValue( ':email', $login, \PDO::PARAM_STR);
 		$requete->execute();
 		
 		return $requete->fetch();
@@ -91,8 +91,8 @@ class UserManagerPDO extends UserManager {
 				OR email = :email';
 		
 		$requete = $this->dao->prepare( $sql );
-		$requete->bindValue( ':login', $login );
-		$requete->bindValue( ':email', $login );
+		$requete->bindValue( ':login', $login, \PDO::PARAM_STR );
+		$requete->bindValue( ':email', $login, \PDO::PARAM_STR);
 		$requete->execute();
 		
 		$requete->setFetchMode( \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\User' );
@@ -107,12 +107,12 @@ class UserManagerPDO extends UserManager {
 	protected function modify( User $user ) {
 		$requete = $this->dao->prepare( 'UPDATE user SET login = :login, password = :password, firstName = :firstName, lastName = :lastName, email = :email, birthDate = :birthDate, dateAjout = NOW(), dateModif = NOW() WHERE id = :id' );
 		
-		$requete->bindValue( ':login', $user->login() );
-		$requete->bindValue( ':password', $user->password() );
-		$requete->bindValue( ':firstName', $user->firstName() );
-		$requete->bindValue( ':lastName', $user->lastName() );
-		$requete->bindValue( ':email', $user->email() );
-		$requete->bindValue( ':birthDate', $user->birthDate() );
+		$requete->bindValue( ':login', $user->login(), \PDO::PARAM_STR);
+		$requete->bindValue( ':password', $user->password(), \PDO::PARAM_STR);
+		$requete->bindValue( ':firstName', $user->firstName(), \PDO::PARAM_STR);
+		$requete->bindValue( ':lastName', $user->lastName(), \PDO::PARAM_STR);
+		$requete->bindValue( ':email', $user->email(), \PDO::PARAM_STR);
+		$requete->bindValue( ':birthDate', $user->birthDate(), \PDO::PARAM_STR);
 		
 		$requete->execute();
 	}

@@ -23,7 +23,7 @@ class ConnexionController extends BackController
             if ( $User = $manager->getUserByLoginOrEmail( $login ) )
             {
 
-                if ($password == $User->password() && $User->role() == 1)
+                if ($password == $User->password())
                 {
                     $this->app->user()->setAuthenticated(true);
 					$this->app->user()->setAttribute('User', $User );
@@ -83,14 +83,7 @@ class ConnexionController extends BackController
 
     public function processForm(HTTPRequest $request)
     {
-	
-		$manager = $this->managers->getManagerOf( 'User' );
-	 
-		if ($request->getExists('id'))
-		{
-			$user = $this->managers->getManagerOf('User')->getUnique($request->getData('id'));
-		}
-    	else
+        if ($request->method() == 'POST')
         {
             $user = new User([
                 'login' => $request->postData('login'),
@@ -108,7 +101,18 @@ class ConnexionController extends BackController
                 $user->setId($request->getData('id'));
             }
         }
-        
+        else
+        {
+            // L'identifiant de l'utilisateur est transmis si on veut le modifier
+            if ($request->getExists('id'))
+            {
+                $user = $this->managers->getManagerOf('User')->getUnique($request->getData('id'));
+            }
+            else
+            {
+                $user = new User;
+            }
+        }
 
         $formBuilder = new UserFormBuilder($user);
         $formBuilder->build();

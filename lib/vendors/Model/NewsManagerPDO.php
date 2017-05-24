@@ -9,9 +9,9 @@ class NewsManagerPDO extends NewsManager
     {
         $requete = $this->dao->prepare('INSERT INTO news SET auteur = :auteur, titre = :titre, contenu = :contenu, dateAjout = NOW(), dateModif = NOW()');
 
-        $requete->bindValue(':titre', $news->titre());
-        $requete->bindValue(':auteur', $news->auteur());
-        $requete->bindValue(':contenu', $news->contenu());
+        $requete->bindValue(':titre', $news->titre(), \PDO::PARAM_STR);
+        $requete->bindValue(':auteur', $news->auteur(), \PDO::PARAM_STR);
+        $requete->bindValue(':contenu', $news->contenu(), \PDO::PARAM_STR);
 
         $requete->execute();
     }
@@ -26,7 +26,7 @@ class NewsManagerPDO extends NewsManager
 		$sql = 'SELECT COUNT(*) FROM news WHERE auteur = :auteur';
 		
 		$requete = $this->dao->prepare($sql);
-		$requete->bindValue(':auteur', $login);
+		$requete->bindValue(':auteur', $login, \PDO::PARAM_STR);
 		$requete->execute();
 		
 		
@@ -75,7 +75,7 @@ class NewsManagerPDO extends NewsManager
         }
 
         $requete = $this->dao->prepare($sql);
-        $requete->bindValue(':auteur', $login);
+        $requete->bindValue(':auteur', $login, \PDO::PARAM_STR);
         $requete->execute();
         $requete->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\News');
 
@@ -116,9 +116,9 @@ class NewsManagerPDO extends NewsManager
     {
         $requete = $this->dao->prepare('UPDATE news SET auteur = :auteur, titre = :titre, contenu = :contenu, dateModif = NOW() WHERE id = :id');
 
-        $requete->bindValue(':titre', $news->titre());
-        $requete->bindValue(':auteur', $news->auteur());
-        $requete->bindValue(':contenu', $news->contenu());
+        $requete->bindValue(':titre', $news->titre(), \PDO::PARAM_STR);
+        $requete->bindValue(':auteur', $news->auteur(), \PDO::PARAM_STR);
+        $requete->bindValue(':contenu', $news->contenu(), \PDO::PARAM_STR);
         $requete->bindValue(':id', $news->id(), \PDO::PARAM_INT);
 
         $requete->execute();
