@@ -18,6 +18,4 @@
 
 ### TODO:
 * unicité login
-* mynews
-* auteur news = login de celui qui l'écrit
 * test du role pour admin

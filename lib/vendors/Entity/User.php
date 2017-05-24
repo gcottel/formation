@@ -13,7 +13,7 @@ class User extends Entity
         $birthDate,
         $dateAjout,
         $dateModif,
-        $role;
+        $MMC_fk_MMY;
 
     const LOGIN_INVALIDE = 1;
     const PASSWORD_INVALIDE = 2;
@@ -23,7 +23,7 @@ class User extends Entity
     const BIRTHDATE_INVALIDE = 6;
     const DATEAJOUT_INVALIDE = 7;
     const DATEMODIF_INVALIDE = 8;
-    const ROLE_INVALIDE = 9;
+    const MMC_fk_MMY_INVALIDE = 9;
 
 
     public function isValid()
@@ -44,14 +44,14 @@ class User extends Entity
         $this->login = $login;
     }
 
-    public function setRole($role)
+    public function setMMC_fk_MMY($MMC_fk_MMY)
     {
-        if (!is_string($role) || empty($role))
+        if (!is_string($MMC_fk_MMY) || empty($MMC_fk_MMY))
         {
-            $this->erreurs[] = self::ROLE_INVALIDE;
+            $this->erreurs[] = self::MMC_fk_MMY_INVALIDE;
         }
 
-        $this->role = $role;
+        $this->MMC_fk_MMY = $MMC_fk_MMY;
     }
 
     public function setPassword($password)
@@ -117,9 +117,9 @@ class User extends Entity
         return $this->login;
     }
 
-    public function role()
+    public function MMC_fk_MMY()
     {
-        return $this->login;
+        return $this->MMC_fk_MMY;
     }
 
     public function firstName()

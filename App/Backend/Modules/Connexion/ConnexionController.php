@@ -20,12 +20,13 @@ class ConnexionController extends BackController
 
             $manager = $this->managers->getManagerOf( 'User' );
 
-            if ( $p = $manager->getPasswordByLoginOrEmail( $login ) )
+            if ( $User = $manager->getUserByLoginOrEmail( $login ) )
             {
 
-                if ($password == $p[0])
+                if ($password == $User->password() && $User->MMC_fk_MMY() == 1)
                 {
                     $this->app->user()->setAuthenticated(true);
+					$this->app->user()->setAttribute('User', $User );
                     $this->app->user()->setFlash('Connexion réussie');
                     $this->app->httpResponse()->redirect('.');
                 }

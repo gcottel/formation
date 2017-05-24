@@ -63,7 +63,8 @@ class UserManagerPDO extends UserManager {
 		return null;
 	}
 	
-	public function getIdByLoginOrEmail( $login ) {
+	public function getIdByLoginOrEmail( $login )
+	{
 		$requete = $this->dao->prepare( 'SELECT id FROM user WHERE login = :login OR email = :email' );
 		$requete->bindValue( ':login', $login );
 		$requete->bindValue( ':email', $login );
@@ -72,7 +73,18 @@ class UserManagerPDO extends UserManager {
 		return $requete->fetch();
 	}
 	
-	public function getUserByLoginOrEmail( $login ) {
+	public function getRoleByLoginOrEmail( $login )
+	{
+		$requete = $this->dao->prepare( 'SELECT MMC_fk_MMY FROM user WHERE login = :login OR email = :email' );
+		$requete->bindValue( ':login', $login );
+		$requete->bindValue( ':email', $login );
+		$requete->execute();
+		
+		return $requete->fetch();
+	}
+	
+	public function getUserByLoginOrEmail( $login )
+	{
 		$sql = 'SELECT * 
 				FROM user 
 				WHERE login = :login 

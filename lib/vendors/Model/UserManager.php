@@ -60,6 +60,20 @@ abstract class UserManager extends Manager
      * @return News La news demandée
      */
     abstract public function getUnique($id);
+	
+	/**
+	 * @param $login
+	 *
+	 * @return User|null
+	 */
+	
+	abstract public function getRoleByLoginOrEmail( $login );
+	
+	/**
+	 * @param $login
+	 *
+	 * @return int|null
+	 */
 
     abstract public function getIdByLoginOrEmail( $login );
 	

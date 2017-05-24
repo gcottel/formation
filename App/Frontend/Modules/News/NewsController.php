@@ -98,7 +98,7 @@ class NewsController extends BackController
         $manager = $this->managers->getManagerOf('News');
 
         $this->page->addVar('listeNews', $manager->getListUser(-1,-1,$this->app->user()->getAttribute('User')->login()));
-        $this->page->addVar('nombreNews', $manager->count());
+        $this->page->addVar('nombreNews', $manager->countMyNews($this->app->user()->getAttribute('User')->login()));
     }
 
     public function executeInsert(HTTPRequest $request)
@@ -154,10 +154,22 @@ class NewsController extends BackController
         {
             $this->app->user()->setFlash($news->isNew() ? 'La news a bien été ajoutée !' : 'La news a bien été modifiée !');
 
-            $this->app->httpResponse()->redirect('/admin/');
+            $this->app->httpResponse()->redirect('.');
         }
 
         $this->page->addVar('form', $form->createView());
     }
+	
+	public function executeDelete(HTTPRequest $request)
+	{
+		$newsId = $request->getData('id');
+		
+		$this->managers->getManagerOf('News')->delete($newsId);
+		$this->managers->getManagerOf('Comments')->deleteFromNews($newsId);
+		
+		$this->app->user()->setFlash('La news a bien été supprimée !');
+		
+		$this->app->httpResponse()->redirect('.');
+	}
 
 }

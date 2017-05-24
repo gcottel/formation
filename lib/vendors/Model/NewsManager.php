@@ -37,6 +37,13 @@ abstract class NewsManager extends Manager
      * @return int
      */
     abstract public function count();
+	
+	/**
+	 * Méthode renvoyant le nombre de news de l'utilisateur de la session.
+	 * @return int
+	 */
+    
+	abstract public function countMyNews($login);
 
     /**
      * Méthode permettant de supprimer une news.
@@ -52,7 +59,7 @@ abstract class NewsManager extends Manager
      * @return array La liste des news. Chaque entrée est une instance de News.
      */
     abstract public function getList($debut = -1, $limite = -1);
-    abstract public function getListUser($debut = -1, $limite = -1, $user);
+    abstract public function getListUser($debut = -1, $limite = -1, $login);
 
     /**
      * Méthode retournant une news précise.

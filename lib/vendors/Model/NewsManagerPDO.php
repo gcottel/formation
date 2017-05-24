@@ -20,6 +20,18 @@ class NewsManagerPDO extends NewsManager
     {
         return $this->dao->query('SELECT COUNT(*) FROM news')->fetchColumn();
     }
+	
+	public function countMyNews($login)
+	{
+		$sql = 'SELECT COUNT(*) FROM news WHERE auteur = :auteur';
+		
+		$requete = $this->dao->prepare($sql);
+		$requete->bindValue(':auteur', $login);
+		$requete->execute();
+		
+		
+		return $requete->fetchColumn();
+	}
 
     public function delete($id)
     {
@@ -64,6 +76,7 @@ class NewsManagerPDO extends NewsManager
 
         $requete = $this->dao->prepare($sql);
         $requete->bindValue(':auteur', $login);
+        $requete->execute();
         $requete->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\News');
 
         $listeNews = $requete->fetchAll();
