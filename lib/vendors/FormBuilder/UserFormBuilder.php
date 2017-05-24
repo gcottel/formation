@@ -1,7 +1,6 @@
 <?php
 namespace FormBuilder;
 
-use OCFram\Entity;
 use OCFram\ExistValidator;
 use \OCFram\FormBuilder;
 use \OCFram\StringField;
@@ -12,20 +11,9 @@ use \OCFram\MailField;
 use \OCFram\MaxLengthValidator;
 use \OCFram\NotNullValidator;
 use \OCFram\EqualsValidator;
-use \Entity\User;
 
 class UserFormBuilder extends FormBuilder
 {
-	protected $user;
-	
-	public function __construct( Entity $entity)
-	{
-		parent::__construct($entity);
-		
-		$this->user = $entity;
-	}
-	
-	
     public function build()
     {
         $this->form->add(new StringField([
@@ -35,6 +23,7 @@ class UserFormBuilder extends FormBuilder
             'validators' => [
                 new MaxLengthValidator('Le login spécifié est trop long (20 caractères maximum)', 20),
                 new NotNullValidator('Merci de spécifier login'),
+				
             ],
         ]))
             ->add(new PasswordField([
@@ -44,7 +33,7 @@ class UserFormBuilder extends FormBuilder
                 'validators' => [
                     new MaxLengthValidator('Le mot de passe spécifié est trop long (30 caractères maximum)', 30),
                     new NotNullValidator('Merci de spécifier le mot de passe'),
-					new ExistValidator('Login déja utilisé', $this->user),
+					new ExistValidator('Login déja utilisé', $this->form->getField( 'login' )),
                 ],
             ]))
             ->add(new PasswordField([
@@ -89,7 +78,7 @@ class UserFormBuilder extends FormBuilder
                 'maxLength' => 50,
                 'validators' => [
                     new EqualsValidator( 'mails différents', $this->form->getField( 'email' ) ),
-					new ExistValidator('Mail déja utilisé', $this->user),
+					new ExistValidator('Le mail déja utilisé', $this->form->getField( 'email' )),
                 ],
             ]))
 

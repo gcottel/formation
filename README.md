@@ -17,5 +17,5 @@
 * The users who subscribe with subscription form are now simple writers. They are not a full administrator and they can only edit their news.
 
 ### TODO:
-* unicité login
+
 
