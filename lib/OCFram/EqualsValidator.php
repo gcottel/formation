@@ -9,7 +9,7 @@ class EqualsValidator extends Validator {
      * @param string $errorMessage
      * @param TextField $field
      */
-    public function __construct( $errorMessage, $field ) {
+    public function __construct( $errorMessage, Field $field ) {
         parent::__construct( $errorMessage );
 
         $this->value = $field->value();

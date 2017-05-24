@@ -2,6 +2,7 @@
 namespace OCFram;
 
 use Model\UserManager;
+use \OCFram\Entity;
 
 
 
@@ -14,17 +15,15 @@ class ExistValidator extends Validator {
 	 * @param string $errorMessage
 	 * @param TextField $field
 	 */
-	public function __construct( $errorMessage, $field ) {
+	public function __construct( $errorMessage, Entity $user ) {
 		parent::__construct( $errorMessage );
 		
-		$this->value = $field->value();
+		$this->value = $user;
 	}
 	
-	public function isValid( $value ) {
+	public function isValid( $value )
+	{
 		
-		$manager = $this->managers->getManagerOf( 'User' );
-		
-		
-		return is_null($User = $manager->getUserByLoginOrEmail( $value ));
+		return is_null($value);
 	}
 }

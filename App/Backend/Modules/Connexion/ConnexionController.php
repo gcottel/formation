@@ -23,7 +23,7 @@ class ConnexionController extends BackController
             if ( $User = $manager->getUserByLoginOrEmail( $login ) )
             {
 
-                if ($password == $User->password() && $User->MMC_fk_MMY() == 1)
+                if ($password == $User->password() && $User->role() == 1)
                 {
                     $this->app->user()->setAuthenticated(true);
 					$this->app->user()->setAttribute('User', $User );
