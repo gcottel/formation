@@ -24,6 +24,12 @@
 * If you have good memory, you know that SQL Injection mean ! 
 * Remove all SQL Injection vulnerabilities. 
 
-# 5 - Fix JavaScript Injection 
+# 5 - Fix JavaScript Injection &#10004;
 * Google is your best friend.
 * Remove all JavaScript Injection vulnerabilities. 
+
+# 6 - Improve your code : Url and Link
+Actually, you need to enter manually the value of a href attribute according to the route.xml file.  
+What happens if tomorrow I decided to edit a route ?  
+All your code break down.  
+This part consists to add a functionnality that ask for a route to the Controller and an Action using a function. Replace the manually entered href by a call of this function.  
