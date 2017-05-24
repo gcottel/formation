@@ -13,9 +13,14 @@
 * Update your ConnexionController code.
 * Adding a subscribtion form : Input list [ login, passwod, password confirmation, email, email confirmation ].
 
-## 2.1 - Two types of user
+## 2.1 - Two types of user &#10004;
 * The users who subscribe with subscription form are now simple writers. They are not a full administrator and they can only edit their news.
 
-### TODO:
+# 3 - CSS : Fix the CSS error when text is too long 
+* Try to enter a very long text in title and text of a News and observe the result. (Long text without space)
+* Fix visual problem by adding some CSS rules.
+
+### :exclamation: TODO:
+* nothing yet
 
 
