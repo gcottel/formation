@@ -1,3 +1,9 @@
+<?php
+$FrontendRouter = \OCFram\RouterFactory::getRouter('Frontend');
+$BackendRouter = \OCFram\RouterFactory::getRouter('Backend');
+?>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,17 +20,17 @@
 <body>
 <div id="wrap">
     <header>
-        <h1><a href="/">Mon super site</a></h1>
+		<h1><a href="<?= \OCFram\RouterFactory::getRouter( 'Backend' )->getUrl( 'News', 'index' ) ?>">Mon super site</a></h1>
         <p>Comment ça, il n'y a presque rien ?</p>
     </header>
 
     <nav>
         <ul>
             <?php if ($user->isAuthenticated()) { ?>
-                <li><a href="/admin/">Admin</a></li>
-                <li><a href="/admin/news-insert.html">Ajouter une news</a></li>
-                <li> <a href="/admin/logOut">LogOut</a></li>
-                <li> <a href="/admin/signIn.html">SignIn</a></li>
+                <li><a href="<?= \OCFram\RouterFactory::getRouter( 'Backend' )->getUrl( 'News', 'index' ) ?>">Admin</a></li>
+				<li><a href="<?= \OCFram\RouterFactory::getRouter( 'Backend' )->getUrl( 'News', 'insert' ) ?>">Ajouter une news</a></li>
+                <li> <a href="<?= \OCFram\RouterFactory::getRouter( 'Backend' )->getUrl( 'Connexion', 'logOut' ) ?>">LogOut</a></li>
+                <li> <a href="<?= \OCFram\RouterFactory::getRouter( 'Backend' )->getUrl( 'Connexion', 'insert' ) ?>">SignIn</a></li>
             <?php } ?>
         </ul>
     </nav>

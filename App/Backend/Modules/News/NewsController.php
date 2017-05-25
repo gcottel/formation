@@ -8,6 +8,7 @@ use \Entity\Comment;
 use \FormBuilder\CommentFormBuilder;
 use \FormBuilder\NewsFormBuilder;
 use \OCFram\FormHandler;
+use \OCFram\RouterFactory;
 
 class NewsController extends BackController
 {
@@ -20,7 +21,7 @@ class NewsController extends BackController
 
         $this->app->user()->setFlash('La news a bien été supprimée !');
 
-        $this->app->httpResponse()->redirect('.');
+        $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Backend' )->getUrl( 'News', 'index' ));
     }
 
     public function executeDeleteComment(HTTPRequest $request)
@@ -29,7 +30,7 @@ class NewsController extends BackController
 
         $this->app->user()->setFlash('Le commentaire a bien été supprimé !');
 
-        $this->app->httpResponse()->redirect('.');
+        $this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show' )).$newsId);
     }
 
     public function executeIndex(HTTPRequest $request)
@@ -84,7 +85,7 @@ class NewsController extends BackController
         {
             $this->app->user()->setFlash('Le commentaire a bien été modifié');
 
-            $this->app->httpResponse()->redirect('/admin/');
+            $this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show' )).$newsId);
         }
 
         $this->page->addVar('form', $form->createView());
@@ -129,7 +130,7 @@ class NewsController extends BackController
         {
             $this->app->user()->setFlash($news->isNew() ? 'La news a bien été ajoutée !' : 'La news a bien été modifiée !');
 
-            $this->app->httpResponse()->redirect('/admin/');
+            $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Backend' )->getUrl( 'News', 'index' ));
         }
 
         $this->page->addVar('form', $form->createView());

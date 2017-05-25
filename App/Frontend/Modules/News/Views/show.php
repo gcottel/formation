@@ -6,7 +6,7 @@
     <p style="text-align: right;"><small><em>Modifiée le <?= $news['dateModif']->format('d/m/Y à H\hi') ?></em></small></p>
 <?php } ?>
 
-<p><a href="commenter-<?= $news['id'] ?>.html">Ajouter un commentaire</a></p>
+<p><a href="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'insertComment', [ 'news' => $news[ 'id' ] ] ) ?>">Ajouter un commentaire</a></p>
 
 <?php
 if (empty($comments))
@@ -23,8 +23,8 @@ foreach ($comments as $comment)
         <legend>
             Posté par <strong><?= htmlspecialchars($comment['auteur']) ?></strong> le <?= $comment['date']->format('d/m/Y à H\hi') ?>
             <?php if ($user->isAuthenticated()) { ?> -
-                <a href="admin/comment-update-<?= $comment['id'] ?>.html">Modifier</a> |
-                <a href="admin/comment-delete-<?= $comment['id'] ?>.html">Supprimer</a>
+				<a href="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'updateComment', [ 'id' => $comment[ 'id' ] ] ) ?>">Modifier</a> |
+				<a href="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'DeleteComment', [ 'id' => $comment[ 'id' ] ] ) ?>">Supprimer</a>
             <?php } ?>
         </legend>
         <p><?= nl2br(htmlspecialchars($comment['contenu'])) ?></p>
@@ -33,4 +33,4 @@ foreach ($comments as $comment)
 }
 ?>
 
-<p><a href="commenter-<?= $news['id'] ?>.html">Ajouter un commentaire</a></p>
+<p><a href="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'insertComment', [ 'news' => $news[ 'id' ] ] ) ?>">Ajouter un commentaire</a></p>

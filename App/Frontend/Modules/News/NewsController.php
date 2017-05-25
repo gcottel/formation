@@ -8,6 +8,7 @@ use \FormBuilder\CommentFormBuilder;
 use \OCFram\FormHandler;
 use \Entity\News;
 use \FormBuilder\NewsFormUserBuilder;
+use \OCFram\RouterFactory;
 
 
 //require \Mobile_Detect;
@@ -51,47 +52,43 @@ class NewsController extends BackController
             $this->app->httpResponse()->redirect404();
         }
 
-        $this->page->addVar('title', $news->titre());
+
+        $this->page->addVar('title',$news->titre());
         $this->page->addVar('news', $news);
         $this->page->addVar('comments', $this->managers->getManagerOf('Comments')->getListOf($news->id()));
     }
-
-    public function executeInsertComment(HTTPRequest $request)
-    {
-        // Si le formulaire a été envoyé.
-        if ($request->method() == 'POST')
-        {
-            $comment = new Comment([
-                'news' => $request->getData('news'),
-                'auteur' => $request->postData('auteur'),
-                'contenu' => $request->postData('contenu')
-            ]);
-        }
-        else
-        {
-            $comment = new Comment;
-        }
-
-        $formBuilder = new CommentFormBuilder($comment);
-        $formBuilder->build();
-
-        $form = $formBuilder->form();
-
-        $formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
-
-        if ($formHandler->process())
-        {
-            $this->app->user()->setFlash('Le commentaire a bien été ajouté, merci !');
-
-            $this->app->httpResponse()->redirect('news-'.$request->getData('news').'.html');
-        }
-
-        $this->page->addVar('comment', $comment);
-        $this->page->addVar('form', $form->createView());
-        $this->page->addVar('title', 'Ajout d\'un commentaire');
-    }
-
-    public function executeIndexMyNews(HTTPRequest $request)
+	
+	public function executeInsertComment(HTTPRequest $request)
+	{
+		// Si le formulaire a été envoyé.
+		if ($request->method() == 'POST')
+		{
+			$comment = new Comment([
+				'news' => $request->getData('id'),
+				'auteur' => $request->postData('auteur'),
+				'contenu' => $request->postData('contenu')
+			]);
+		}
+		else
+		{
+			$comment = new Comment;
+		}
+		$formBuilder = new CommentFormBuilder($comment);
+		$formBuilder->build();
+		$form = $formBuilder->form();
+		$formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
+		if ($formHandler->process())
+		{
+			$this->app->user()->setFlash('Le commentaire a bien été ajouté, merci !');
+			$this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $request->getData('id') ] ));
+		}
+		$this->page->addVar('comment', $comment);
+		$this->page->addVar('form', $form->createView());
+		$this->page->addVar('title', 'Ajout d\'un commentaire');
+	}
+	
+	
+	public function executeIndexMyNews(HTTPRequest $request)
     {
         $this->page->addVar('title', 'Gestion des news');
 
@@ -114,6 +111,8 @@ class NewsController extends BackController
 
         $this->page->addVar('title', 'Modification d\'une news');
     }
+	
+	
 
     public function processForm(HTTPRequest $request)
     {
@@ -154,7 +153,7 @@ class NewsController extends BackController
         {
             $this->app->user()->setFlash($news->isNew() ? 'La news a bien été ajoutée !' : 'La news a bien été modifiée !');
 
-            $this->app->httpResponse()->redirect('.');
+            $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'IndexMyNews' ));
         }
 
         $this->page->addVar('form', $form->createView());
@@ -169,7 +168,56 @@ class NewsController extends BackController
 		
 		$this->app->user()->setFlash('La news a bien été supprimée !');
 		
-		$this->app->httpResponse()->redirect('.');
+		$this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'IndexMyNews' ));
 	}
+	
+	public function executeDeleteComment( HTTPRequest $request )
+	{
+    	
+		$newsId = $this->managers->getManagerOf( 'Comments' )->getNews( $request->getData( 'id' ) );
+		$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
+		
+		$this->app->user()->setFlash( 'Le commentaire a bien été supprimé !' );
+		
+		$this->app->httpResponse()->redirect( RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $newsId ] ) );
+	}
+	
+	public function executeUpdateComment(HTTPRequest $request)
+	{
+		$this->page->addVar('title', 'Modification d\'un commentaire');
+		
+		
+		if ($request->method() == 'POST')
+		{
+			$comment = new Comment([
+				'id' => $request->getData('id'),
+				'auteur' => $request->postData('auteur'),
+				'contenu' => $request->postData('contenu')
+			]);
+		}
+		else
+		{
+			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
+		}
+		
+		$formBuilder = new CommentFormBuilder($comment);
+		$formBuilder->build();
+		
+		$form = $formBuilder->form();
+		
+		$formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
+		
+		if ($formHandler->process())
+		{
+			$this->app->user()->setFlash('Le commentaire a bien été modifié');
+			$newsId = $this->managers->getManagerOf( 'Comments' )->getNews( $request->getData( 'id' ) );
+			
+			$this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $newsId ])));
+		}
+		
+		$this->page->addVar('form', $form->createView());
+	}
+	
+	
 
 }

@@ -2,6 +2,7 @@
 namespace App\Backend;
 
 use \OCFram\Application;
+use \OCFram\RouterFactory;
 
 class BackendApplication extends Application
 {

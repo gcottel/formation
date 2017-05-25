@@ -7,6 +7,7 @@ use \OCFram\HTTPRequest;
 use \Entity\User;
 use \FormBuilder\UserFormBuilder;
 use \OCFram\FormHandler;
+use \OCFram\RouterFactory;
 
 class ConnexionController extends BackController
 {
@@ -29,7 +30,7 @@ class ConnexionController extends BackController
                     $this->app->user()->setAuthenticated(true);
                     $this->app->user()->setAttribute('User', $User );
                     $this->app->user()->setFlash('Connexion réussie');
-                    $this->app->httpResponse()->redirect('.');
+                    $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'index' ));
                 }
                 else
                 {
@@ -50,7 +51,7 @@ class ConnexionController extends BackController
     public function executelogOut(HTTPRequest $request)
     {
         $this->app->user()->setAuthenticated(false);
-        $this->app->httpResponse()->redirect('.');
+        $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'index' ));
     }
 
 
@@ -62,7 +63,7 @@ class ConnexionController extends BackController
 
         $this->app->user()->setFlash('L\'utilisateur a bien été supprimée !');
 
-        $this->app->httpResponse()->redirect('.');
+        $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'index' ));
     }
 
 
@@ -124,7 +125,7 @@ class ConnexionController extends BackController
         {
             $this->app->user()->setFlash($user->isNew() ? 'L\'utilisateur a bien été ajouté !' : 'L\'utilisateur a bien été modifié !');
 
-            $this->app->httpResponse()->redirect('/admin/');
+            $this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'index' ));
         }
 
         $this->page->addVar('form', $form->createView());

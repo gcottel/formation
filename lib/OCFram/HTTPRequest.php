@@ -43,3 +43,5 @@ class HTTPRequest extends ApplicationComponent
         return $_SERVER['REQUEST_URI'];
     }
 }
+
+

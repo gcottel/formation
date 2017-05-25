@@ -8,6 +8,7 @@ abstract class Application
     protected $name;
     protected $user;
     protected $config;
+	protected $menu = [];
 
     public function __construct()
     {
@@ -21,27 +22,13 @@ abstract class Application
 
     public function getController()
     {
-        $router = new Router;
+		$router = RouterFactory::getRouter($this->name());
 
         $xml = new \DOMDocument;
         $xml->load(__DIR__.'/../../App/'.$this->name.'/Config/routes.xml');
 
         $routes = $xml->getElementsByTagName('route');
-
-        // On parcourt les routes du fichier XML.
-        foreach ($routes as $route)
-        {
-            $vars = [];
-
-            // On regarde si des variables sont présentes dans l'URL.
-            if ($route->hasAttribute('vars'))
-            {
-                $vars = explode(',', $route->getAttribute('vars'));
-            }
-
-            // On ajoute la route au routeur.
-            $router->addRoute(new Route($route->getAttribute('url'), $route->getAttribute('module'), $route->getAttribute('action'), $vars));
-        }
+		
 
         try
         {
@@ -64,6 +51,7 @@ abstract class Application
         $controllerClass = 'App\\'.$this->name.'\\Modules\\'.$matchedRoute->module().'\\'.$matchedRoute->module().'Controller';
         return new $controllerClass($this, $matchedRoute->module(), $matchedRoute->action());
     }
+	
 
     abstract public function run();
 
