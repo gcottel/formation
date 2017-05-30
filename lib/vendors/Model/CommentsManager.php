@@ -72,5 +72,5 @@ abstract class CommentsManager extends Manager
 	 *
 	 * @return int
 	 */
-	abstract public function getNews( $id );
+	abstract public function getNewsId( $id );
 }

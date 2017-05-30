@@ -43,8 +43,15 @@ class RouterFactory
 				$vars = explode( ',', $route->getAttribute( 'vars' ) );
 			}
 			
+			$format  = ( $route->getAttribute( 'format' ) ) ? $route->getAttribute( 'format' ) : 'html';
+			$pattern = ( $route->getAttribute( 'pattern' ) ) ? $route->getAttribute( 'pattern' ) : $route->getAttribute( 'url' );
+			if ( $format != 'html' ) {
+				$pattern .= '.'.$format;
+			}
 			
-			$router->addRoute( new Route( $route->getAttribute( 'url' ), $route->getAttribute( 'module' ), $route->getAttribute( 'action' ), $route->getAttribute('pattern'), $vars ) );
+			
+			$router->addRoute( new Route( $route->getAttribute( 'url' ), $route->getAttribute( 'module' ), $route->getAttribute('action'), $pattern, $format, $vars ) );
+			
 		}
 		
 		self::$RouterForApplication[ $applicationName ] = $router;

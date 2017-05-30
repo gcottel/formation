@@ -9,13 +9,15 @@ class Route
     protected $url;
     protected $varsNames;
     protected $vars = [];
+    protected  $format;
 	
 	
-	public function __construct( $url, $module, $action, $pattern, array $varsNames ) {
+	public function __construct( $url, $module, $action, $pattern, $format, array $varsNames ) {
 		$this->setUrl( $url );
 		$this->setModule( $module );
 		$this->setAction( $action );
 		$this->setPattern( $pattern );
+		$this->setFormat( $format );
 		$this->setVarsNames( $varsNames );
 	}
 
@@ -35,6 +37,15 @@ class Route
             return false;
         }
     }
+	
+ 	
+ 	public function setFormat ( $format )
+	{
+		if( is_string( $format ))
+		{
+			$this->format = $format;
+		}
+	}
 
     public function setAction($action)
     {
@@ -109,5 +120,11 @@ class Route
 	{
 		return $this->url;
 	}
+	
+	public function format()
+	{
+		return $this->format;
+  	}
+	
 }
 

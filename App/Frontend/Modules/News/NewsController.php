@@ -51,12 +51,18 @@ class NewsController extends BackController
         {
             $this->app->httpResponse()->redirect404();
         }
-
+	
+		$formBuilder = new CommentFormBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		$formBuilder->build();
+		$form = $formBuilder->form();
+		$this->page->addVar( 'form', $form->createView() );
 
         $this->page->addVar('title',$news->titre());
         $this->page->addVar('news', $news);
         $this->page->addVar('comments', $this->managers->getManagerOf('Comments')->getListOf($news->id()));
     }
+    
+    
 	
 	public function executeInsertComment(HTTPRequest $request)
 	{
@@ -85,6 +91,43 @@ class NewsController extends BackController
 		$this->page->addVar('comment', $comment);
 		$this->page->addVar('form', $form->createView());
 		$this->page->addVar('title', 'Ajout d\'un commentaire');
+	}
+	
+	
+	public function executeInsertCommentJson( HTTPRequest $request )
+	{
+		
+		if ( $request->method() == 'POST' ) {
+			$comment = new Comment( [
+				'news' => $request->getData('news'),
+				'auteur' => $request->postData('auteur'),
+				'contenu' => $request->postData('contenu')
+			] );
+			
+			
+		}
+		else
+		{
+			$comment = new Comment;
+		}
+		
+		$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		$formBuilder->build();
+		
+		$form = $formBuilder->form();
+		
+		$formHandler = new FormHandler( $form, $this->managers->getManagerOf( 'Comments' ), $request );
+		
+		if ( $formHandler->process() ) {
+			$this->page->addVar( 'comment', $comment );
+			//var_dump($comment);
+			$this->page->addVar( 'comment_auteur', $this->app->user()->getAttribute( 'user' )[ 'login' ] );
+			//$this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $comment['news'] ] ));
+		}
+		else{
+			$this->app->httpResponse()->addHeader('HTTP/1.0 404 Error');
+			$this->page->addVar('errors', 'Une erreur est survenue');
+		}
 	}
 	
 	
@@ -182,9 +225,33 @@ class NewsController extends BackController
 		$this->app->httpResponse()->redirect( RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $newsId ] ) );
 	}
 	
+	/**
+	 *
+	 *
+	 * @param HTTPRequest $request
+	 */
+	
+	public function executeDeleteCommentJson( HTTPRequest $request ) {
+		$comment = $this->managers->getManagerOf( 'Comments' )->getUnique( $request->getData( 'id' ) );
+		
+		if ( !$comment ) {
+			//$this->app->httpResponse()->addHeader( 'HTTP/1.0 404 Not Found ' );
+			$this->page->addVar( 'errors', 'Le commentaire n\'existe déjà plus' );
+		}
+		else {
+			$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
+		}
+		$this->page->addVar( 'comment_id', $request->getData( 'id' ) );
+	}
+	
+	
+	
 	public function executeUpdateComment(HTTPRequest $request)
 	{
 		$this->page->addVar('title', 'Modification d\'un commentaire');
+		
+		
+		
 		
 		
 		if ($request->method() == 'POST')
@@ -197,6 +264,12 @@ class NewsController extends BackController
 		}
 		else
 		{
+			//$Comment = $this->managers->getManagerOf('Comment')->getCommentUsingId($request->getData('id'));
+			//if ( null === $Comment ) {
+				// erreur ccommentaire non existant
+				//return;
+			//}
+			
 			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
 		}
 		
@@ -210,14 +283,23 @@ class NewsController extends BackController
 		if ($formHandler->process())
 		{
 			$this->app->user()->setFlash('Le commentaire a bien été modifié');
-			$newsId = $this->managers->getManagerOf( 'Comments' )->getNews( $request->getData( 'id' ) );
+			$newsId = $this->managers->getManagerOf( 'Comments' )->getNewsId( $request->getData( 'id' ) );
 			
-			$this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $newsId ])));
+			$this->app->httpResponse()->redirect(self::getLinkToShow(new News(['id' => $newsId])));
 		}
 		
 		$this->page->addVar('form', $form->createView());
 	}
 	
-	
+	/**
+	 * Fonction de generation du lien vers l'action show du controlleur news du frontend
+	 *
+	 * @param News $News
+	 *
+	 * @return string
+	 */
+	public static function getLinkToShow( News $News ) {
+		return RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $News->id() ]);
+	}
 
 }

@@ -9,7 +9,7 @@ class Router
 	
 	public function addRoute( Route $route ) {
 		if ( !in_array( $route, $this->routes ) ) {
-			$this->routes[$route->module().'|'.$route->action()]  = $route;
+			$this->routes[$route->module().'|'.$route->action().'|'.$route->format()]  = $route;
 		}
 	}
 
@@ -47,11 +47,16 @@ class Router
 
         throw new \RuntimeException('Aucune route ne correspond à l\'URL', self::NO_ROUTE);
     }
-	
-	public function getUrl( $module, $action, array $vars = [] )
+
+    
+	public function getUrl( $module, $action,array $vars = [], $format = 'html' )
 	{
+		if ($format == false)
+		{
+			$format = 'html';
+		}
 		
-		$route = $this->routes[ $module . '|' . $action ];
+		$route = $this->routes[ $module . '|' . $action . '|' . $format ];
 		
 		if ( !empty( $route ) )
 		{
@@ -67,6 +72,6 @@ class Router
 			
 			return $route->url();
 		}
-		throw new \RuntimeException( 'Aucune route ne correspond à ' . $module . ':' . $action, self::NO_ROUTE );
+		throw new \RuntimeException( 'Aucune route ne correspond à ' . $module . ':' . $action. ':' . $format, self::NO_ROUTE );
 	}
 }

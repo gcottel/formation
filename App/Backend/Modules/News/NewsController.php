@@ -30,8 +30,19 @@ class NewsController extends BackController
 
         $this->app->user()->setFlash('Le commentaire a bien été supprimé !');
 
-        $this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show' )).$newsId);
+        $this->app->httpResponse()->redirect((RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', false )).$newsId);
     }
+	
+	/**
+	 * supression d'un commentaire
+	 *
+	 * @param HTTPRequest $request
+	 */
+	
+	public function executeDeleteCommentJson( HTTPRequest $request ) {
+		$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
+		$this->page->addVar( 'comment_id', $request->getData('id'));
+	}
 
     public function executeIndex(HTTPRequest $request)
     {

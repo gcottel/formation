@@ -67,4 +67,10 @@ class Comment extends Entity
     {
         return $this->date;
     }
+    
+	public function getAttributeToJSON() {
+    	return [
+    		'id','news','auteur','contenu','date'
+		];
+	}
 }

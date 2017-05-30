@@ -1,7 +1,8 @@
 <?php
 namespace OCFram;
 
-abstract class Entity implements \ArrayAccess
+
+abstract class Entity implements \ArrayAccess, \JsonSerializable
 {
     use Hydrator;
 
@@ -63,4 +64,24 @@ abstract class Entity implements \ArrayAccess
     {
         throw new \Exception('Impossible de supprimer une quelconque valeur');
     }
+	
+	
+	public function getAttributeToJSON() {
+		$ReflexionClass = new \ReflectionClass($this);
+		$retour = [];
+		foreach($ReflexionClass->getProperties() as $Property) {
+			$retour[] = $Property->getName();
+		}
+		return $retour;
+	}
+	
+	public function jsonSerialize()
+	{
+		$retour = [];
+		
+		foreach($this->getAttributeToJSON() as $property) {
+			$retour[$property] = $this->$property;
+		}
+		return $retour;
+	}
 }

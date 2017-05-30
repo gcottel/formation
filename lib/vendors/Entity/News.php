@@ -69,8 +69,11 @@ class News extends Entity
     {
         return $this->auteur;
     }
-
-    public function titre()
+	
+	/**
+	 * @return mixed
+	 */
+	public function titre()
     {
         return $this->titre;
     }

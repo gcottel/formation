@@ -5,6 +5,14 @@ class Page extends ApplicationComponent
 {
     protected $contentFile;
     protected $vars = [];
+	protected $format;
+
+	
+	public function  __construct (Application $app, $format)
+	{
+		parent::__construct( $app );
+		$this->format = $format;
+	}
 
     public function addVar($var, $value)
     {
@@ -15,28 +23,81 @@ class Page extends ApplicationComponent
 
         $this->vars[$var] = $value;
     }
-
-    public function getGeneratedPage()
-    {
-        if (!file_exists($this->contentFile))
-        {
-            throw new \RuntimeException('La vue spécifiée n\'existe pas');
-        }
-
-        $user = $this->app->user();
-
-        extract($this->vars);
-
-        ob_start();
-        require $this->contentFile;
-        $content = ob_get_clean();
-
-        ob_start();
-        require __DIR__.'/../../App/'.$this->app->name().'/Templates/layout.php';
-        return ob_get_clean();
+	
+	
+	public function getGeneratedPage()
+	{
+		/*if (!file_exists($this->contentFile))
+		{
+			var_dump($this);
+			throw new \RuntimeException('La vue spécifiée n\'existe pas');
+		}*/
+		switch ($this->format)
+		{
+			case 'html':
+				return $this->getGeneratedPageHTML();
+				break;
+			case 'json':
+				return $this->getGeneratedPageJSON();
+				break;
+			default:
+				var_dump($this);
+				throw new \RuntimeException('Le format '.$this->format.' n\est pas encore géré');
+		}
+		
     }
+	
+    
+    
+	private function getGeneratedPageHTML() {
+		if ( !file_exists( $this->contentFile ) ) {
+			throw new \RuntimeException( 'La vue spécifiée n\'existe pas: ');
+		}
+		
+		$user = $this->app->user();
+		
+		extract( $this->vars );
+		
+		ob_start();
+		require $this->contentFile;
+		$content = ob_get_clean();
+		
+		ob_start();
+		require __DIR__ . '/../../App/' . $this->app->name() . '/Templates/layout.html.php';
+		
+		return ob_get_clean();
+	}
+	
+	private function getGeneratedPageJSON()
+	{
+		$user = $this->app->user();
+		
+		extract ( $this->vars );
+		
+		$contenu = include($this->contentFile);
+		
+		return json_encode(require __DIR__ . '/../../App/' . $this->app->name() . '/Templates/layout.json.php');
+	}
+	
+	public function format()
+	{
+			return $this->format;
+ 	}
 
-    public function setContentFile($contentFile)
+	public function setFormat( $format )
+	{
+			if ( !is_string( $format ) || empty( $format ) )
+			{
+					throw new \InvalidArgumentException( 'Le format de la vue est invalide' );
+ 			}
+ 
+ 		$this->format = $format;
+ 	}
+	
+
+		
+		
+	public function setContentFile($contentFile)
     {
         if (!is_string($contentFile) || empty($contentFile))
         {

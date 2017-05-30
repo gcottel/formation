@@ -73,9 +73,9 @@ class CommentsManagerPDO extends CommentsManager
         return $q->fetch();
     }
 	
-	public function getNews( $id ) {
+	public function getNewsId( $id ) {
 
-		$q = $this->dao->prepare( 'SELECT news FROM comments WHERE news = :id' );
+		$q = $this->dao->prepare( 'SELECT news FROM comments WHERE id = :id' );
 		$q->bindValue( ':id', (int)$id, \PDO::PARAM_INT );
 		$q->execute();
 		
