@@ -237,11 +237,11 @@ class NewsController extends BackController
 	 */
 	
 	public function executeDeleteCommentJson( HTTPRequest $request ) {
-		$comment = $this->managers->getManagerOf( 'Comments' )->getUnique( $request->getData( 'id' ) );
+		$comment = $this->managers->getManagerOf( 'Comments' )->get( $request->getData( 'id' ) );
 		
 		if ( !$comment ) {
-			//$this->app->httpResponse()->addHeader( 'HTTP/1.0 404 Not Found ' );
-			$this->page->addVar( 'errors', 'Le commentaire n\'existe déjà plus' );
+			$this->app->httpResponse()->addHeader( 'HTTP/1.0 404 Not Found ' );
+			$this->page->addVar( 'errors', 'Le commentaire n\'existe pas' );
 		}
 		else {
 			$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
@@ -305,6 +305,54 @@ class NewsController extends BackController
 	 */
 	public static function getLinkToShow( News $News ) {
 		return RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $News->id() ]);
+	}
+	
+	public function executeUpdateCommentFormJson( HTTPRequest $request )
+	{
+		
+	}
+	
+	
+	public function executeUpdateCommentJson( HTTPRequest $request )
+	{
+		
+		if ( $request->method() == 'POST' ) {
+			$comment = new Comment( [
+				'id' => $request->postData('id'),
+				'news' => $request->getData('news'),
+				'auteur' => $request->postData('auteur'),
+				'contenu' => $request->postData('contenu')
+			] );
+			
+			
+		}
+		else
+		{
+			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
+		}
+		
+		$formBuilder = new CommentFormBuilder($comment);
+		$formBuilder->build();
+		
+		$form = $formBuilder->form();
+		
+		$formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
+		
+		if ( $formHandler->process() ) {
+			//var_dump('0');
+			//var_dump($request->postData( 'auteur' ));
+			//var_dump('1');
+			//var_dump($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
+			//$comment->setDate($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
+			$this->page->addVar( 'comment', $comment );
+			//var_dump($comment);
+			$this->page->addVar( 'comment_auteur', $this->app->user()->getAttribute( 'user' )[ 'login' ] );
+			//$this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $comment['news'] ] ));
+		}
+		else{
+			$this->app->httpResponse()->addHeader('HTTP/1.0 404 Error');
+			$this->page->addVar('errors', 'Une erreur est survenue');
+		}
 	}
 
 }

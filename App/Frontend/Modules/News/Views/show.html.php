@@ -34,4 +34,8 @@ if ( empty( $comments ) ) {
 		<input type="submit" value="Commenter" />
 	</p>
 </form>
+<script>
+	var _url_to_remove_comment =<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'DeleteCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>;
+	var _url_to_update_comment = <?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'UpdateCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>;
+</script>
 
