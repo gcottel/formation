@@ -14,8 +14,12 @@ class CommentsManagerPDO extends CommentsManager
         $q->bindValue(':contenu', $comment->contenu(), \PDO::PARAM_STR);
 
         $q->execute();
-
-        $comment->setId($this->dao->lastInsertId());
+		//var_dump('ici');
+		$Comment_new = $this->get($this->dao->lastInsertId());
+		$comment->setId($Comment_new->id());
+		$comment->setDate($Comment_new->date());
+        //var_dump($comment);
+        //$comment->setId($this->dao->lastInsertId());
     }
 
     public function delete($id)
@@ -64,18 +68,30 @@ class CommentsManagerPDO extends CommentsManager
 
     public function get($id)
     {
-        $q = $this->dao->prepare('SELECT id, news, auteur, contenu FROM comments WHERE id = :id');
+        $q = $this->dao->prepare('SELECT id, news, auteur, contenu,date FROM comments WHERE id = :id');
         $q->bindValue(':id', (int) $id, \PDO::PARAM_INT);
         $q->execute();
 
         $q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
 
-        return $q->fetch();
+        $Comment = $q->fetch();
+	
+		$Comment->setDate(new \DateTime($Comment->date()));
+		return $Comment;
     }
 	
 	public function getNewsId( $id ) {
 
 		$q = $this->dao->prepare( 'SELECT news FROM comments WHERE id = :id' );
+		$q->bindValue( ':id', (int)$id, \PDO::PARAM_INT );
+		$q->execute();
+		
+		return $q->fetchColumn();
+	}
+	
+	public function getLastDateAuthor( $id ) {
+		
+		$q = $this->dao->prepare( 'SELECT date FROM comments WHERE id = :id' );
 		$q->bindValue( ':id', (int)$id, \PDO::PARAM_INT );
 		$q->execute();
 		

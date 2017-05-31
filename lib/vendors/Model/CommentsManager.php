@@ -73,4 +73,13 @@ abstract class CommentsManager extends Manager
 	 * @return int
 	 */
 	abstract public function getNewsId( $id );
+	
+	/**
+	 * méthode renvoyant la date du commentaire grace à son id
+	 *
+	 * @param $id
+	 *
+	 * @return \DateTime
+	 */
+	 abstract public function getLastDateAuthor( $author );
 }

@@ -68,6 +68,10 @@ class Comment extends Entity
         return $this->date;
     }
     
+    protected function dateToJSON() {
+    	return $this->date->format('d/m/Y à H\hi');
+	}
+    
 	public function getAttributeToJSON() {
     	return [
     		'id','news','auteur','contenu','date'

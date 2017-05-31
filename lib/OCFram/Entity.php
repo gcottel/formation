@@ -80,7 +80,12 @@ abstract class Entity implements \ArrayAccess, \JsonSerializable
 		$retour = [];
 		
 		foreach($this->getAttributeToJSON() as $property) {
-			$retour[$property] = $this->$property;
+			if (is_callable([$this,$property.'ToJSON'])) {
+				$retour[ $property ] = $this->{$property.'ToJSON'}();
+			}
+			else {
+				$retour[ $property ] = $this->$property;
+			}
 		}
 		return $retour;
 	}

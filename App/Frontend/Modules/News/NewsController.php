@@ -119,6 +119,11 @@ class NewsController extends BackController
 		$formHandler = new FormHandler( $form, $this->managers->getManagerOf( 'Comments' ), $request );
 		
 		if ( $formHandler->process() ) {
+			//var_dump('0');
+			//var_dump($request->postData( 'auteur' ));
+			//var_dump('1');
+			//var_dump($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
+			//$comment->setDate($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
 			$this->page->addVar( 'comment', $comment );
 			//var_dump($comment);
 			$this->page->addVar( 'comment_auteur', $this->app->user()->getAttribute( 'user' )[ 'login' ] );
@@ -217,7 +222,7 @@ class NewsController extends BackController
 	public function executeDeleteComment( HTTPRequest $request )
 	{
     	
-		$newsId = $this->managers->getManagerOf( 'Comments' )->getNews( $request->getData( 'id' ) );
+		$newsId = $this->managers->getManagerOf( 'Comments' )->getNewsId( $request->getData( 'id' ) );
 		$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
 		
 		$this->app->user()->setFlash( 'Le commentaire a bien été supprimé !' );

@@ -44,7 +44,8 @@ function addComment(comment) {
 		'</legend>' +
 		'<p class="contenu">{{comment_contenu}}</p> ' +
 		'</fieldset>';
-	
+	//var date = new Date(année, mois[, jour[, heures[, minutes[, secondes[, millisecondes]]]]]);
+	//var datestring  = ("0" + date.getDate()).slice( -2 ) + '/' + ("0" + date.getMonth()).slice( -2 ) + '/' + date.getFullYear() + ' à ' + ("0" + date.getHours()).slice( -2 ) + 'h' + ("0" + date.getMinutes()).slice( -2 );
 	commentHTML = commentHTML.replace('{{comment_news}}', comment.news);
 	commentHTML = commentHTML.replace('{{comment_auteur}}', comment.auteur);
 	commentHTML = commentHTML.replace('{{comment_date}}', comment.date);
