@@ -9,6 +9,7 @@ use \OCFram\FormHandler;
 use \Entity\News;
 use \FormBuilder\NewsFormUserBuilder;
 use \OCFram\RouterFactory;
+use \FormBuilder\CommentFormUserBuilder;
 
 
 //require \Mobile_Detect;
@@ -52,7 +53,12 @@ class NewsController extends BackController
             $this->app->httpResponse()->redirect404();
         }
 	
-		$formBuilder = new CommentFormBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		if ($this->app->user()->isAuthenticated()){
+			$formBuilder = new CommentFormUserBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		else {
+			$formBuilder = new CommentFormBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
 		$formBuilder->build();
 		$form = $formBuilder->form();
 		$this->page->addVar( 'form', $form->createView() );
@@ -67,19 +73,34 @@ class NewsController extends BackController
 	public function executeInsertComment(HTTPRequest $request)
 	{
 		// Si le formulaire a été envoyé.
-		if ($request->method() == 'POST')
-		{
-			$comment = new Comment([
-				'news' => $request->getData('id'),
+		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
+			$comment = new Comment( [
+				'news' => $request->getData('news'),
 				'auteur' => $request->postData('auteur'),
 				'contenu' => $request->postData('contenu')
-			]);
+			] );
+			
+			
+		}
+		elseif ($request->method() == 'POST' AND $this->app->user()->isAuthenticated()){
+			$comment = new Comment( [
+				'news' => $request->getData('news'),
+				'auteur' => $this->app->user()->getAttribute('User')->login(),
+				'contenu' => $request->postData('contenu')
+			] );
 		}
 		else
 		{
 			$comment = new Comment;
 		}
-		$formBuilder = new CommentFormBuilder($comment);
+		
+		if ($this->app->user()->isAuthenticated()){
+			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		else {
+			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		
 		$formBuilder->build();
 		$form = $formBuilder->form();
 		$formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
@@ -97,7 +118,7 @@ class NewsController extends BackController
 	public function executeInsertCommentJson( HTTPRequest $request )
 	{
 		
-		if ( $request->method() == 'POST' ) {
+		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'news' => $request->getData('news'),
 				'auteur' => $request->postData('auteur'),
@@ -106,12 +127,25 @@ class NewsController extends BackController
 			
 			
 		}
+		elseif ($request->method() == 'POST' AND $this->app->user()->isAuthenticated()){
+			$comment = new Comment( [
+				'news' => $request->getData('news'),
+				'auteur' => $this->app->user()->getAttribute('User')->login(),
+				'contenu' => $request->postData('contenu')
+			] );
+		}
 		else
 		{
 			$comment = new Comment;
 		}
 		
-		$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		if ($this->app->user()->isAuthenticated()){
+			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		else {
+			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		
 		$formBuilder->build();
 		
 		$form = $formBuilder->form();
@@ -278,7 +312,12 @@ class NewsController extends BackController
 			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
 		}
 		
-		$formBuilder = new CommentFormBuilder($comment);
+		if ($this->app->user()->isAuthenticated()){
+			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		else {
+			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
 		$formBuilder->build();
 		
 		$form = $formBuilder->form();
@@ -315,8 +354,9 @@ class NewsController extends BackController
 	
 	public function executeUpdateCommentJson( HTTPRequest $request )
 	{
+			
 		
-		if ( $request->method() == 'POST' ) {
+		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'id' => $request->postData('id'),
 				'news' => $request->getData('news'),
@@ -326,12 +366,25 @@ class NewsController extends BackController
 			
 			
 		}
+		elseif ($request->method() == 'POST' AND $this->app->user()->isAuthenticated()){
+			$comment = new Comment( [
+				'id' => $request->postData('id'),
+				'news' => $request->getData('news'),
+				'auteur' => $this->app->user()->getAttribute('User')->login(),
+				'contenu' => $request->postData('contenu')
+			] );
+		}
 		else
 		{
 			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
 		}
 		
-		$formBuilder = new CommentFormBuilder($comment);
+		if ($this->app->user()->isAuthenticated()){
+			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
+		else {
+			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		}
 		$formBuilder->build();
 		
 		$form = $formBuilder->form();

@@ -1,5 +1,9 @@
 $(document).ready($(function() {
 	
+	/**
+	 * gère les submit (ajouter ou modifier): échange avec le php, modification en ajax puis réinitialisation quand action finie
+	 */
+	
 	$('#commentform1, #commentform2').on('submit',function( e )
 	{
 		e.stopPropagation();
@@ -18,17 +22,9 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					//console.log('0');
-					//console.log($(this).attr('action'));
-					//console.log(data);
-					//console.log('1');
-					//console.log(data.contenu);
-					//console.log('2');
-					//console.log((data.contenu)[0]["news"]);
-					//console.log('iiiiiiii');
-					//console.log(data.contenu.news);
-					//console.log($(this).attr('action'));
 					addComment( data.contenu );
+					$("form")[0].reset(); // réinitialise le formulaire
+					$("form")[1].reset();
 				}
 				
 			} );
@@ -50,18 +46,10 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					//console.log('0');
-					//console.log($(this).attr('action'));
-					//console.log(data);
-					//console.log('1');
-					//console.log(data.contenu);
-					//console.log('2');
-					//console.log((data.contenu)[0]["news"]);
-					//console.log('iiiiiiii');
-					//console.log(data.contenu.news);
-					//console.log($(this).attr('action'));
-					console.log(data.contenu);
 					modifyComment( data.contenu );
+					$("form")[0].reset();
+					$("form")[1].reset();
+					$( 'input[value="Modifier"]' ).replaceWith( $( '<input type="submit" value="Commenter"/>' )); // reset fonctionne pas: ?
 				}
 				
 			} );
@@ -71,6 +59,9 @@ $(document).ready($(function() {
 		return false;
 		});
 	
+	/**
+	 * Quand click sur modifier: scroll down, rempli le formulaire par le commentaire concerné et change 'Commenter' en 'Modifier'
+	 */
 	
 	
 	$(document).on('click','[data-action="edit-comment"]', function(event) {
@@ -85,20 +76,16 @@ $(document).ready($(function() {
 		$(':text').val(auteur);
 		$('textarea[name=contenu]').val(contenu);
 		$( 'input[value="Commenter"]' ).replaceWith( $( '<input type="submit" value="Modifier" data-id=' + id + ' />' ));
+		$( 'input[value="Modifier"]' ).replaceWith( $( '<input type="submit" value="Modifier" data-id=' + id + ' />' )); // sert a pouvoir faire une deuxième modification sans rafraichir
 		$('form').get(0).setAttribute('action', '/comment-update-' + id + '.json');
 		$('form').get(1).setAttribute('action', '/comment-update-' + id + '.json');
 		
-
-		
-		/*
-		var html = '<form action="/comment-update-' + id + '.json"' + 'id="comment-update">' +
-			'<textarea name="comment" form="usrform">' + contenu + '</textarea>' +
-		'<input type="submit" value = "Modifier">' +
-		'</form>';
-		$( "fieldset[data-id=" + id + "]" ).replaceWith( $( html ));*/
-		
 		
 	});
+	
+	/**
+	 * Quand click sur supprimer, remplace le commentaire en question par  'commentaire supprimé'
+	 */
 	
 	$(document).on('click','[data-action="remove-comment"]', function(event) {
 		
@@ -119,22 +106,13 @@ $(document).ready($(function() {
 			
 		});
 		
-		/*
-		var id = $(this).attr('data-id');
-		$( "fieldset[data-id=" + id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ));
-		*/
-		
-		//console.log('click sur remove du commentaire' + data.contenu);
 	});
 	}));
 
-/*function deleteComment( comment ) {
-	console.log( 'deleteComment' + comment.id );
-	//$( "fieldset[data-id=" + comment_id + "]" ).replaceWith( $( '<p class="msg-flash' + rand + '">Commentaire supprimé</p>' ).hide().fadeIn() );
-}*/
-
-
-
+/**
+ * affiche le commentaire qui vient d'être ajouté
+ * @param comment
+ */
 	
 function addComment(comment) {
 	
@@ -160,6 +138,11 @@ function addComment(comment) {
 	$('#commentList').append(commentHTML);
 	//$('#commentList').html(commentHTML);
 }
+
+/**
+ * affiche les modification qui viennent d'être faites
+ * @param comment
+ */
 
 function modifyComment(comment) {
 	
