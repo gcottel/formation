@@ -41,7 +41,6 @@ class Page extends ApplicationComponent
 				return $this->getGeneratedPageJSON();
 				break;
 			default:
-				var_dump($this);
 				throw new \RuntimeException('Le format '.$this->format.' n\est pas encore géré');
 		}
 		

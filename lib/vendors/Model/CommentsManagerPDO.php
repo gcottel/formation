@@ -62,6 +62,9 @@ class CommentsManagerPDO extends CommentsManager
         $q->bindValue(':auteur', $comment->auteur(), \PDO::PARAM_STR);
         $q->bindValue(':contenu', $comment->contenu(), \PDO::PARAM_STR);
         $q->bindValue(':id', $comment->id(), \PDO::PARAM_INT);
+	
+		$Comment_new = $this->get($comment->id());
+		$comment->setDate($Comment_new->date());
 
         $q->execute();
     }

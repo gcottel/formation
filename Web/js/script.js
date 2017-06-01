@@ -38,7 +38,7 @@ $(document).ready($(function() {
 			var contenu = $( "[name='contenu']" ).val();
 			var auteur  = $( "[name='auteur']" ).val();
 			var id = $( 'input[value="Modifier"]').data('id');
-			var postdata = $( this ).serialize() + id;
+			var postdata = $( this ).serialize()+ '&id=' + id;
 			console.log($( this ).attr( 'action' ));
 			console.log(id);
 			$.ajax( {
