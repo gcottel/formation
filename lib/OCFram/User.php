@@ -32,6 +32,11 @@ class User
 	{
 		return isset($_SESSION['auth']) && $_SESSION['auth'] === true && $_SESSION['User']->MMC_fk_MMY() == 1;
 	}
+	
+	public function login()
+	{
+		return $_SESSION['User']->login();
+	}
 
     public function setAttribute($attr, $value)
     {

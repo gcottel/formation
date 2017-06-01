@@ -21,7 +21,7 @@ class BackendApplication extends Application
         }
         else
         {
-            $controller = new Modules\Connexion\ConnexionController($this, 'Connexion', 'index');
+            $controller = new Modules\Connexion\ConnexionController($this, 'Connexion', 'index', 'html');
         }
 
         $controller->execute();
@@ -30,3 +30,7 @@ class BackendApplication extends Application
         $this->httpResponse->send();
     }
 }
+
+
+
+	
