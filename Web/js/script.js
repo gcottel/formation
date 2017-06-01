@@ -1,9 +1,79 @@
 $(document).ready($(function() {
 	
+	
+	/*
+	var auto_refresh = setInterval(
+		function refresh ()
+		{
+			console.log(window.location.pathname);
+			$('#commentList').load(window.location.pathname + ' #commentList').fadeIn("slow");
+			
+		}, 10000); // refresh every 10000 milliseconds*/
+	
+	
+	var i = 10;
+
+	
+	$(document).on('click','[data-action="voir-plus"]', function(event) {
+		
+		event.stopPropagation();
+		event.preventDefault();
+		
+		//console.log($('fieldset[data-action="Comment"]').length);
+		var nbComment = 0;
+		nbComment=$('fieldset[data-action="Comment"]').length;
+		//alert(nbComment);
+		
+		if (nbComment < i + 10)
+		{
+			alert('Nope');
+		}
+		else
+		{
+			var temp = i + 10;
+			while(i<temp){
+				$($('fieldset[data-action="Comment"]')[i]).show();
+				i = i + 1;
+				//alert(i);
+		}
+		
+		}
+		//$('#commentList').show();
+		//$($('fieldset[data-action="Comment"]')[0]).show();
+		//console.log($('fieldset')[0])
+		
+		
+		
+	});
+	
+	$(document).on('click','[data-action="voir-moins"]', function(event) {
+		
+		event.stopPropagation();
+		event.preventDefault();
+		
+		if ( i - 10 < 0)
+		{
+			alert('Nope');
+		}
+		else
+		{
+			var temp = i - 10;
+			while(i>temp){
+				$($('fieldset[data-action="Comment"]')[i]).hide();
+				i = i - 1;
+			}
+		}
+		
+		
+		//$('#commentList').hide();
+		//$($('fieldset[data-action="Comment"]')[0]).hide();
+		
+	});
+	
+	
 	/**
 	 * gère les submit (ajouter ou modifier): échange avec le php, modification en ajax puis réinitialisation quand action finie
 	 */
-	
 	$('#commentform1, #commentform2').on('submit',function( e )
 	{
 		e.stopPropagation();
@@ -39,7 +109,7 @@ $(document).ready($(function() {
 			console.log(id);
 			$.ajax( {
 				type     : $( this ).attr( 'method' ),
-				url      : $( this ).attr( 'action' ),
+				url      : _url_to_update_comment,
 				data     : postdata,
 				dataType : "json",
 				error    : function() {
@@ -86,15 +156,17 @@ $(document).ready($(function() {
 	/**
 	 * Quand click sur supprimer, remplace le commentaire en question par  'commentaire supprimé'
 	 */
-	
 	$(document).on('click','[data-action="remove-comment"]', function(event) {
 		
 		event.stopPropagation();
 		event.preventDefault();
 		$.ajax( {
 			//TODO url dynamique:
-			url:/*_url_to_remove_comment*/'comment-delete-' + $(this).attr('data-id') + ".json",
-			data: $(this).serialize(),
+			method:'POST',
+			url:_url_to_remove_comment, /*'comment-delete-' + $(this).attr('data-id') + ".json", */
+			data: {
+				id : $(this).attr('data-id'),
+			} ,
 			dataType : "json",
 			error: function(  ) {
 				$(this).prepend('<p>Echec</p>');
@@ -107,13 +179,13 @@ $(document).ready($(function() {
 		});
 		
 	});
+	
 	}));
 
 /**
  * affiche le commentaire qui vient d'être ajouté
  * @param comment
  */
-	
 function addComment(comment) {
 	
 	var commentHTML = '<fieldset data-id="{{comment_id}}">'+
@@ -126,6 +198,8 @@ function addComment(comment) {
 	//var date = new Date(année, mois[, jour[, heures[, minutes[, secondes[, millisecondes]]]]]);
 	//var datestring  = ("0" + date.getDate()).slice( -2 ) + '/' + ("0" + date.getMonth()).slice( -2 ) + '/' + date.getFullYear() + ' à ' + ("0" + date.getHours()).slice( -2 ) + 'h' + ("0" + date.getMinutes()).slice( -2 );
 	//TODO replace all:
+	var contenu = comment.contenu;
+	console.log(jQuery.parseHTML(comment.contenu)[0]);
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());

@@ -28,6 +28,9 @@ if ( empty( $comments ) ) {
 	<?php endforeach; ?>
 </div>
 
+<input type="submit" value="Voir plus" data-action = "voir-plus" />
+<input type="submit" value="Voir moins" data-action = "voir-moins" />
+
 <form action="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'insertCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>" method="post" id="commentform2">
 	<p>
 		<?= $form ?>
@@ -35,7 +38,7 @@ if ( empty( $comments ) ) {
 	</p>
 </form>
 <script>
-	var _url_to_remove_comment =<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'DeleteCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>;
-	var _url_to_update_comment = <?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'UpdateCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>;
+	var _url_to_remove_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'DeleteCommentJson', [], 'json' ) ?>";
+	var _url_to_update_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'UpdateCommentJson', [], 'json' ) ?>";
 </script>
 

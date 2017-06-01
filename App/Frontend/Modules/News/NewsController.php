@@ -53,12 +53,9 @@ class NewsController extends BackController
             $this->app->httpResponse()->redirect404();
         }
 	
-		if ($this->app->user()->isAuthenticated()){
-			$formBuilder = new CommentFormUserBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
-		else {
-			$formBuilder = new CommentFormBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
+		
+		$formBuilder = new CommentFormUserBuilder( new Comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		
 		$formBuilder->build();
 		$form = $formBuilder->form();
 		$this->page->addVar( 'form', $form->createView() );
@@ -121,7 +118,7 @@ class NewsController extends BackController
 		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'news' => $request->getData('news'),
-				'auteur' => $request->postData('auteur'),
+				'auteur' => 'Anonyme',
 				'contenu' => $request->postData('contenu')
 			] );
 			
@@ -139,12 +136,9 @@ class NewsController extends BackController
 			$comment = new Comment;
 		}
 		
-		if ($this->app->user()->isAuthenticated()){
-			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
-		else {
-			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
+		
+		$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		
 		
 		$formBuilder->build();
 		
@@ -271,16 +265,17 @@ class NewsController extends BackController
 	 */
 	
 	public function executeDeleteCommentJson( HTTPRequest $request ) {
-		$comment = $this->managers->getManagerOf( 'Comments' )->get( $request->getData( 'id' ) );
+		$comment = $this->managers->getManagerOf( 'Comments' )->get( $request->postData( 'id' ) );
 		
 		if ( !$comment ) {
-			$this->app->httpResponse()->addHeader( 'HTTP/1.0 404 Not Found ' );
-			$this->page->addVar( 'errors', 'Le commentaire n\'existe pas' );
+			$this->app->httpResponse()->redirect404();
+			//$this->app->httpResponse()->addHeader( 'HTTP/1.0 404 Not Found ' );
+			//$this->page->addVar( 'errors', 'Le commentaire n\'existe pas' );
 		}
 		else {
-			$this->managers->getManagerOf( 'Comments' )->delete( $request->getData( 'id' ) );
+			$this->managers->getManagerOf( 'Comments' )->delete( $comment->id() );
 		}
-		$this->page->addVar( 'comment_id', $request->getData( 'id' ) );
+		$this->page->addVar( 'comment_id', $comment->id()  );
 	}
 	
 	
@@ -359,8 +354,7 @@ class NewsController extends BackController
 		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'id' => $request->postData('id'),
-				'news' => $request->getData('news'),
-				'auteur' => $request->postData('auteur'),
+				'auteur' => 'Anonyme',
 				'contenu' => $request->postData('contenu')
 			] );
 			
@@ -369,24 +363,20 @@ class NewsController extends BackController
 		elseif ($request->method() == 'POST' AND $this->app->user()->isAuthenticated()){
 			$comment = new Comment( [
 				'id' => $request->postData('id'),
-				'news' => $request->getData('news'),
 				'auteur' => $this->app->user()->getAttribute('User')->login(),
 				'contenu' => $request->postData('contenu')
 			] );
 		}
 		else
 		{
-			$comment = $this->managers->getManagerOf('Comments')->get($request->getData('id'));
+			$comment = $this->managers->getManagerOf('Comments')->get($request->postData('id'));
 		}
 		
-		if ($this->app->user()->isAuthenticated()){
-			$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
-		else {
-			$formBuilder = new CommentFormBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
-		}
+		
+		$formBuilder = new CommentFormUserBuilder( $comment, $this->managers->getManagerOf( 'User' ), $this->app->user() );
+		
 		$formBuilder->build();
-		
+		/** @var Form $form */
 		$form = $formBuilder->form();
 		
 		$formHandler = new FormHandler($form, $this->managers->getManagerOf('Comments'), $request);
