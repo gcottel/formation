@@ -1,46 +1,108 @@
 $(document).ready($(function() {
 	
+	/*
+	var i = 10;
 	
+	//Affichange des 10 premiers
+	
+	$('fieldset').hide();
+	for (var j=0; j<10; j++)
+	{
+		$($('fieldset[data-action="Comment"]')[j]).show();
+	}*/
+	
+	//autorefresh en gardant ceux qui étaient affichés (fonctionne mais enlève le hide dès la fin de la fonction
 	/*
 	var auto_refresh = setInterval(
 		function refresh ()
 		{
+			var nbComment = 0;
+			nbComment=$('fieldset[data-action="Comment"]').length;
 			console.log(window.location.pathname);
-			$('#commentList').load(window.location.pathname + ' #commentList').fadeIn("slow");
+			
+			var refreshList = $('#commentList').clone();
+			refreshList.load(window.location.pathname + ' #commentList');
+			
+			for (var j=i; j<nbComment; j++)
+			{
+				$(refreshList.find('fieldset')[j]).hide();
+			}
+			$(refreshList.find('fieldset')[1]).hide();
+			console.log(refreshList.find('fieldset')[1]);
+			console.log($( '#commentList>fieldset')[1]);
+			$('#commentList').replaceWith(refreshList);
+			console.log($( '#commentList>fieldset')[1]);
 			
 		}, 10000); // refresh every 10000 milliseconds*/
 	
 	
-	var i = 10;
-
+	var nbCommentDisplay = $('fieldset[data-action="Comment"]').length;
+	
+	var auto_refresh = setInterval(
+		function refresh ()
+		{
+			var news = $( 'input[value="Voir plus"]').data('id');
+			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
+			$.ajax( {
+				type     : 'POST',
+				url      : _url_to_refresh_comment,
+				data     : postdata,
+				dataType : "json",
+				error    : function() {
+					$( this ).prepend( '<p>Echec</p>' );
+				},
+				success  : function( data ) {
+					actualiserComments( data.contenu );
+				}
+				
+			} );
+			
+		}, 10000);
 	
 	$(document).on('click','[data-action="voir-plus"]', function(event) {
 		
 		event.stopPropagation();
 		event.preventDefault();
 		
-		//console.log($('fieldset[data-action="Comment"]').length);
+		//voir plus fonctionnel mais tout est généré
+		/*
 		var nbComment = 0;
 		nbComment=$('fieldset[data-action="Comment"]').length;
-		//alert(nbComment);
 		
 		if (nbComment < i + 10)
 		{
-			alert('Nope');
+			while(i<nbComment) {
+				$( $( 'fieldset[data-action="Comment"]' )[ i ] ).show();
+				i = i + 1;
+			}
 		}
 		else
 		{
 			var temp = i + 10;
 			while(i<temp){
+				$('#commentList').load(window.location.pathname + ' #commentList').fadeIn("slow");
 				$($('fieldset[data-action="Comment"]')[i]).show();
 				i = i + 1;
-				//alert(i);
-		}
+			}
 		
-		}
-		//$('#commentList').show();
-		//$($('fieldset[data-action="Comment"]')[0]).show();
-		//console.log($('fieldset')[0])
+		}*/
+		
+		var news = $( 'input[value="Voir plus"]').data('id');
+		var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
+		console.log(nbCommentDisplay);
+		$.ajax( {
+			type     : 'POST',
+			url      : _url_to_show_more_comment,
+			data     : postdata,
+			dataType : "json",
+			error    : function() {
+				$( this ).prepend( '<p>Echec</p>' );
+			},
+			success  : function( data ) {
+				afficherComments( data.contenu );
+			}
+			
+		} );
 		
 		
 		
@@ -51,9 +113,14 @@ $(document).ready($(function() {
 		event.stopPropagation();
 		event.preventDefault();
 		
+		// voir moins fonctionnel mais tout est généré
+		/*
 		if ( i - 10 < 0)
 		{
-			alert('Nope');
+			while(i>0	){
+				$($('fieldset[data-action="Comment"]')[i]).hide();
+				i = i - 1;
+			}
 		}
 		else
 		{
@@ -62,11 +129,8 @@ $(document).ready($(function() {
 				$($('fieldset[data-action="Comment"]')[i]).hide();
 				i = i - 1;
 			}
-		}
+		}*/
 		
-		
-		//$('#commentList').hide();
-		//$($('fieldset[data-action="Comment"]')[0]).hide();
 		
 	});
 	
@@ -105,8 +169,6 @@ $(document).ready($(function() {
 			var auteur  = $( "[name='auteur']" ).val();
 			var id = $( 'input[value="Modifier"]').data('id');
 			var postdata = $( this ).serialize()+ '&id=' + id;
-			console.log($( this ).attr( 'action' ));
-			console.log(id);
 			$.ajax( {
 				type     : $( this ).attr( 'method' ),
 				url      : _url_to_update_comment,
@@ -180,7 +242,79 @@ $(document).ready($(function() {
 		
 	});
 	
+	/**
+	 * affiche les commentaires suite au click sur voir plus
+	 * @param comments
+	 */
+	function afficherComments(comments) {
+		
+
+		$(comments).each( function() {
+			var commentHTML = '<fieldset data-id="{{comment_id}}">'+
+				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
+				' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
+				'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
+				'</legend>' +
+				'<p class="comment-content" >{{comment_contenu}}</p> ' +
+				'</fieldset>';
+			//TODO replace all:
+			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+			commentHTML = commentHTML.replace( '{{comment_news}}', this.news );
+			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
+			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
+			commentHTML = commentHTML.replace( '{{comment_date}}', this.date );
+			commentHTML = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+			commentHTML = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+			$( '#commentList' ).append( commentHTML);
+			nbCommentDisplay = nbCommentDisplay + 1;
+		});
+		
+		//$('#commentList').html(commentHTML);
+	}
+	
+	/**
+	 * actualise les commentaires qu'a renvoié le serveur suit a l'auto refresh
+	 * @param comments
+	 */
+	function actualiserComments(comments) {
+		
+		if(typeof(comments) == 'undefined')
+		{
+			return;
+		}
+		else {
+			$( comments ).each( function() {
+				var commentHTML = '<fieldset data-id="{{comment_id}}">'+
+					'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
+					' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
+					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
+					'</legend>' +
+					'<p class="comment-content" >{{comment_contenu}}</p> ' +
+					'</fieldset>';
+				//TODO replace all:
+				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+				commentHTML     = commentHTML.replace( '{{comment_news}}', this.news );
+				commentHTML     = commentHTML.replace( '{{comment_auteur}}', this.auteur );
+				commentHTML     = commentHTML.replace( '{{comment_auteur}}', this.auteur );
+				commentHTML     = commentHTML.replace( '{{comment_date}}', this.date );
+				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+				$( "fieldset[data-id=" + comment.id + "]" ).replaceWith( $( commentHTML ));
+				nbCommentDisplay = nbCommentDisplay + 1;
+			});
+		}
+		
+		//$('#commentList').html(commentHTML);
+	}
+	
+	
 	}));
+
+
 
 /**
  * affiche le commentaire qui vient d'être ajouté
@@ -199,7 +333,7 @@ function addComment(comment) {
 	//var datestring  = ("0" + date.getDate()).slice( -2 ) + '/' + ("0" + date.getMonth()).slice( -2 ) + '/' + date.getFullYear() + ' à ' + ("0" + date.getHours()).slice( -2 ) + 'h' + ("0" + date.getMinutes()).slice( -2 );
 	//TODO replace all:
 	var contenu = comment.contenu;
-	console.log(jQuery.parseHTML(comment.contenu)[0]);
+
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
 	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
@@ -242,3 +376,5 @@ function modifyComment(comment) {
 	$( "fieldset[data-id=" + comment.id + "]" ).replaceWith( $( commentHTML ));
 	//$('#commentList').html(commentHTML);
 }
+
+

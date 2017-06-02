@@ -100,4 +100,38 @@ class CommentsManagerPDO extends CommentsManager
 		
 		return $q->fetchColumn();
 	}
+	
+	
+	public function getList($debut = -1, $limite = -1, $news)
+	{
+		
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE news = :news ORDER BY id DESC ';
+		date_default_timezone_set('Europe/Paris');
+		
+		if ($debut != -1 || $limite != -1)
+		{
+			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+		}
+		
+		$q = $this->dao->prepare($sql);
+		$q->bindValue(':news', $news, \PDO::PARAM_INT);
+		$q->execute();
+		
+		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
+		
+		$commentList = $q->fetchAll();
+		
+		foreach ($commentList as $comment)
+		{
+			$comment->setDate(new \DateTime($comment->date()));
+		}
+		
+		$q->closeCursor();
+		
+		return $commentList;
+	
+		
+	}
+	
+	
 }

@@ -46,6 +46,7 @@ class NewsController extends BackController
 
     public function executeShow(HTTPRequest $request)
     {
+		
         $news = $this->managers->getManagerOf('News')->getUnique($request->getData('id'));
 
         if (empty($news))
@@ -62,9 +63,35 @@ class NewsController extends BackController
 
         $this->page->addVar('title',$news->titre());
         $this->page->addVar('news', $news);
-        $this->page->addVar('comments', $this->managers->getManagerOf('Comments')->getListOf($news->id()));
+		$nombreComment = $this->app->config()->get('nombre_comment');
+		$manager = $this->managers->getManagerOf('Comments');
+		$commentList = $manager->getList(0, $nombreComment, $news->id());
+        $this->page->addVar('comments', $commentList);
     }
+	
+	public function executeShowMoreJson(HTTPRequest $request)
+	{
+		
+		$news = $request->postData('news');
+		$nbCommentDisplay = $request->postData('nbCommentDisplay');
+		$nombreComment = $this->app->config()->get('nombre_comment');
+		$manager = $this->managers->getManagerOf('Comments');
+		$commentList = $manager->getList($nbCommentDisplay, $nombreComment, $news);
+		$this->page->addVar('commentList', $commentList);
+	}
     
+	public function executeRefreshJson(HTTPRequest $request)
+	{
+		
+		$news = $request->postData('news');
+		$nbCommentDisplay = $request->postData('nbCommentDisplay');
+		$manager = $this->managers->getManagerOf('Comments');
+		$commentListDelete = $manager->getListDelete(0,$nbCommentDisplay, $news);
+		$this->page->addVar('commentList', $commentListDelete);
+		$commentListUpdate = $manager->getListUpdate(0,$nbCommentDisplay, $news);
+		$this->page->addVar('commentList', $commentListUpdate);
+		
+	}
     
 	
 	public function executeInsertComment(HTTPRequest $request)

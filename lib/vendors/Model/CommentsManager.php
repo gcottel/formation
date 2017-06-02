@@ -82,4 +82,32 @@ abstract class CommentsManager extends Manager
 	 * @return \DateTime
 	 */
 	 abstract public function getLastDateAuthor( $author );
+	
+	
+	/**
+	 * Méthode retournant une liste de commentaires demandée.
+	 * @param $debut int La première commentaires à sélectionner
+	 * @param $limite int Le nombre de commentaires à sélectionner
+	 * @param $news int id de la news actuelle
+	 * @return array La liste des commentaires. Chaque entrée est une instance de Comment.
+	 */
+	abstract public function getList($debut = -1, $limite = -1, $news);
+	
+	/**
+	 * Méthode retournant une liste de commentaires demandée (ceux qui ont été supprimés depuis le dernier update).
+	 * @param $debut int La première commentairesà sélectionner
+	 * @param $limite int Le nombre decommentaires à sélectionner
+	 * @param $news int id de la news actuelle
+	 * @return array La liste des commentaires. Chaque entrée est une instance de Comment.
+	 */
+	abstract public function getListDelete($debut = -1, $limite = -1, $news);
+	
+	/**
+	 * Méthode retournant une liste de commentaires demandée(ceux qui on été modifiés depuis le dernier update).
+	 * @param $debut int La première commentaires à sélectionner
+	 * @param $limite int Le nombre de commentaires à sélectionner
+	 * @param $news int id de la news actuelle
+	 * @return array La liste des commentaires. Chaque entrée est une instance de Comment.
+	 */
+	abstract public function getListUpdate($debut = -1, $limite = -1, $news);
 }
