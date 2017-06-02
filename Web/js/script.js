@@ -41,6 +41,7 @@ $(document).ready($(function() {
 	var auto_refresh = setInterval(
 		function refresh ()
 		{
+			console.log('début');
 			var news = $( 'input[value="Voir plus"]').data('id');
 			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
 			$.ajax( {
@@ -52,10 +53,12 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					actualiserComments( data.contenu );
+					actualiserCommentsUpdate( data.contenu[1] );
+					actualiserCommentsDelete( data.contenu[0] );
 				}
 				
 			} );
+			console.log('fin');
 			
 		}, 10000);
 	
@@ -100,6 +103,7 @@ $(document).ready($(function() {
 			},
 			success  : function( data ) {
 				afficherComments( data.contenu );
+				
 			}
 			
 		} );
@@ -278,7 +282,27 @@ $(document).ready($(function() {
 	 * actualise les commentaires qu'a renvoié le serveur suit a l'auto refresh
 	 * @param comments
 	 */
-	function actualiserComments(comments) {
+	function actualiserCommentsDelete(comments) {
+		
+		if(typeof(comments) == 'undefined')
+		{
+			return;
+		}
+		else {
+			$( comments ).each( function() {
+				$( "fieldset[data-id=" + data.contenu + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ));
+			});
+		}
+		
+		//$('#commentList').html(commentHTML);
+	}
+	
+	
+	/**
+	 * actualise les commentaires qu'a renvoié le serveur suit a l'auto refresh
+	 * @param comments
+	 */
+	function actualiserCommentsUpdate(comments) {
 		
 		if(typeof(comments) == 'undefined')
 		{
@@ -304,7 +328,6 @@ $(document).ready($(function() {
 				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
 				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
 				$( "fieldset[data-id=" + comment.id + "]" ).replaceWith( $( commentHTML ));
-				nbCommentDisplay = nbCommentDisplay + 1;
 			});
 		}
 		
