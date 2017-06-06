@@ -92,7 +92,6 @@ $(document).ready($(function() {
 		
 		var news = $( 'input[value="Voir plus"]').data('id');
 		var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
-		console.log(nbCommentDisplay);
 		$.ajax( {
 			type     : 'POST',
 			url      : _url_to_show_more_comment,
@@ -102,7 +101,7 @@ $(document).ready($(function() {
 				$( this ).prepend( '<p>Echec</p>' );
 			},
 			success  : function( data ) {
-				afficherComments( data.contenu );
+				afficherComments( data.contenu[0], data.contenu[1] );
 				
 			}
 			
@@ -253,15 +252,16 @@ $(document).ready($(function() {
 	 * affiche les commentaires suite au click sur voir plus
 	 * @param comments
 	 */
-	function afficherComments(comments) {
+	function afficherComments(comments, loginIfIsAuthenticated) {
 		
 
 		$(comments).each( function() {
-			var commentHTML = '<fieldset data-id="{{comment_id}}">'+
-				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
-				' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
-				'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
-				'</legend>' +
+			var commentHTML = '<fieldset data-id="{{comment_id}}">' +
+				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' ;
+			if (loginIfIsAuthenticated == -1 || loginIfIsAuthenticated == this.auteur){
+				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
+					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' };
+			commentHTML = commentHTML +	'</legend>' +
 				'<p class="comment-content" >{{comment_contenu}}</p> ' +
 				'</fieldset>';
 			//TODO replace all:
