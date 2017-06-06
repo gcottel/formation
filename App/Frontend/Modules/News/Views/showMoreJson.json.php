@@ -25,4 +25,4 @@ else
 	$loginIfIsAuthenticated = NULL;
 }
 
-return [$commentList,$loginIfIsAuthenticated];
+return ['commentList' => $commentList, 'loginIfIsAuthenticated' => $loginIfIsAuthenticated];

@@ -36,14 +36,16 @@ $(document).ready($(function() {
 		}, 10000); // refresh every 10000 milliseconds*/
 	
 	
-	var nbCommentDisplay = $('fieldset[data-action="Comment"]').length;
 	
+
 	var auto_refresh = setInterval(
 		function refresh ()
 		{
 			console.log('début');
+			var lastid = $('fieldset').data('id');
 			var news = $( 'input[value="Voir plus"]').data('id');
-			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay; //requete pour savoir ce qu'il y a à refresh
+			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + $('fieldset[data-action="Comment"]').length; //requete pour savoir ce qu'il y a à refresh
+			// TODO remplacer nombre de comment affiché par l'id du denrier
 			$.ajax( {
 				type     : 'POST',
 				url      : _url_to_refresh_comment,
@@ -53,11 +55,14 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					actualiserCommentsUpdate( data.contenu[1] );
-					actualiserCommentsDelete( data.contenu[0] );
+					afficher( data.contenu.comment_updated_a, 'modification');
+					afficher( data.contenu.comment_deleted_a, 'suppression');
+					afficher( data.contenu.comment_added_a, 'ajout nouveau' );
 				}
 				
 			} );
+			
+
 			console.log('fin');
 			
 		}, 10000);
@@ -91,7 +96,7 @@ $(document).ready($(function() {
 		}*/
 		
 		var news = $( 'input[value="Voir plus"]').data('id');
-		var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
+		var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + $('fieldset[data-action="Comment"]').length;
 		$.ajax( {
 			type     : 'POST',
 			url      : _url_to_show_more_comment,
@@ -101,7 +106,7 @@ $(document).ready($(function() {
 				$( this ).prepend( '<p>Echec</p>' );
 			},
 			success  : function( data ) {
-				afficherComments( data.contenu[0], data.contenu[1] );
+				afficher( data.contenu.commentList,'ajout' , data.contenu.loginIfIsAuthenticated );
 				
 			}
 			
@@ -159,7 +164,7 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					addComment( data.contenu );
+					afficher( [data.contenu], 'ajout nouveau', -1);
 					$("form")[0].reset(); // réinitialise le formulaire
 					$("form")[1].reset();
 				}
@@ -182,7 +187,7 @@ $(document).ready($(function() {
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
-					modifyComment( data.contenu );
+					afficher( [data.contenu], 'modification', -1 );
 					console.log(data.contenu);
 					$("form")[0].reset(); // réinitialise le contenu
 					$("form")[1].reset();
@@ -210,9 +215,7 @@ $(document).ready($(function() {
 		
 		window.scrollTo(0, document.body.scrollHeight);
 		var id = $(this).attr('data-id');
-		var contenu = $(this).attr('data-contenu');
-		var auteur = $(this).attr('data-auteur');
-		$(':text').val(auteur);
+		var contenu = $(this).parents('fieldset').find('.comment-content').text();
 		$('textarea[name=contenu]').val(contenu);
 		$( 'input[value="Commenter"]' ).replaceWith( $( '<input type="submit" value="Modifier" data-id=' + id + ' />' ));
 		$('form').get(0).setAttribute('action', _url_to_update_comment);
@@ -229,7 +232,6 @@ $(document).ready($(function() {
 		event.stopPropagation();
 		event.preventDefault();
 		$.ajax( {
-			//TODO url dynamique:
 			method:'POST',
 			url:_url_to_remove_comment, /*'comment-delete-' + $(this).attr('data-id') + ".json", */
 			data: {
@@ -248,91 +250,68 @@ $(document).ready($(function() {
 		
 	});
 	
+	
+	
 	/**
-	 * affiche les commentaires suite au click sur voir plus
+	 * fonction d'affichage selon le type d'affichage a faire (ajout, modification, suppression)
 	 * @param comments
 	 */
-	function afficherComments(comments, loginIfIsAuthenticated) {
+	function afficher(comments, type, loginIfIsAuthenticated) {
 		
-
+		console.log(loginIfIsAuthenticated);
+		
+		if((typeof(comments) == 'undefined') || (comments.length == 0))
+		{
+			return;
+		}
+		
 		$(comments).each( function() {
-			var commentHTML = '<fieldset data-id="{{comment_id}}">' +
+			var commentHTML = '<fieldset data-id="{{comment_id}}" data-action="Comment">' +
 				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' ;
 			if (loginIfIsAuthenticated == -1 || loginIfIsAuthenticated == this.auteur){
-				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
+				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} href=>Modifier</a> | ' +
 					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' };
 			commentHTML = commentHTML +	'</legend>' +
 				'<p class="comment-content" >{{comment_contenu}}</p> ' +
 				'</fieldset>';
 			//TODO replace all:
-			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
-			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
-			commentHTML = commentHTML.replace( '{{comment_id}}', this.id.toString() );
+			commentHTML = commentHTML.replace( /{{comment_id}}/g, this.id.toString() );
 			commentHTML = commentHTML.replace( '{{comment_news}}', this.news );
-			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
 			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
 			commentHTML = commentHTML.replace( '{{comment_date}}', this.date );
 			commentHTML = commentHTML.replace( '{{comment_contenu}}', this.contenu );
-			commentHTML = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+	
+		
+		if (type == 'ajout nouveau')
+		{
+			if ($( "fieldset[data-id=" + this.id + "]" ).length != 0) // test pour ne pas  ré-afficher un commentaire que l'on vient d'ajouter lors de l'auto refresh
+			{
+				return;
+			}
+			$( '#commentList' ).prepend( commentHTML);
+			
+		}
+			
+		else if (type == 'ajout')
+		{
 			$( '#commentList' ).append( commentHTML);
-			nbCommentDisplay = nbCommentDisplay + 1;
+				
+		}
+		
+		else if (type == 'modification')
+		{
+			
+			$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( commentHTML ));
+		}
+		
+		else if (type == 'suppression')
+		{
+			$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
+		}
+		
 		});
 		
-		//$('#commentList').html(commentHTML);
-	}
-	
-	/**
-	 * actualise les commentaires qu'a renvoié le serveur suit a l'auto refresh
-	 * @param comments
-	 */
-	function actualiserCommentsDelete(comments) {
-		if((typeof(comments) == 'undefined') || (comments.length == 0))
-		{
-			return;
-		}
-		else {
-			$( comments ).each( function() {
-				$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
-			});
-		}
 		
-		//$('#commentList').html(commentHTML);
-	}
-	
-	
-	/**
-	 * actualise les commentaires qu'a renvoié le serveur suit a l'auto refresh
-	 * @param comments
-	 */
-	function actualiserCommentsUpdate(comments) {
-		if(typeof(comments) == 'undefined')
-		{
-			return;
-		}
-		else {
-			$( comments ).each( function() {
-				var commentHTML = '<fieldset data-id="{{comment_id}}">'+
-					'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
-					' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
-					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
-					'</legend>' +
-					'<p class="comment-content" >{{comment_contenu}}</p> ' +
-					'</fieldset>';
-				//TODO replace all:
-				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
-				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
-				commentHTML     = commentHTML.replace( '{{comment_id}}', this.id.toString() );
-				commentHTML     = commentHTML.replace( '{{comment_news}}', this.news );
-				commentHTML     = commentHTML.replace( '{{comment_auteur}}', this.auteur );
-				commentHTML     = commentHTML.replace( '{{comment_auteur}}', this.auteur );
-				commentHTML     = commentHTML.replace( '{{comment_date}}', this.date );
-				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
-				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
-				$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( commentHTML ));
-			});
-		}
-		
-		//$('#commentList').html(commentHTML);
 	}
 	
 	
@@ -340,65 +319,7 @@ $(document).ready($(function() {
 
 
 
-/**
- * affiche le commentaire qui vient d'être ajouté
- * @param comment
- */
-function addComment(comment) {
-	
-	var commentHTML = '<fieldset data-id="{{comment_id}}">'+
-		'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
-		' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
-		'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
-		'</legend>' +
-		'<p class="comment-content" >{{comment_contenu}}</p> ' +
-		'</fieldset>';
-	//var date = new Date(année, mois[, jour[, heures[, minutes[, secondes[, millisecondes]]]]]);
-	//var datestring  = ("0" + date.getDate()).slice( -2 ) + '/' + ("0" + date.getMonth()).slice( -2 ) + '/' + date.getFullYear() + ' à ' + ("0" + date.getHours()).slice( -2 ) + 'h' + ("0" + date.getMinutes()).slice( -2 );
-	//TODO replace all:
-	var contenu = comment.contenu;
 
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_news}}', comment.news);
-	commentHTML = commentHTML.replace('{{comment_auteur}}', comment.auteur);
-	commentHTML = commentHTML.replace('{{comment_auteur}}', comment.auteur);
-	commentHTML = commentHTML.replace('{{comment_date}}', comment.date);
-	commentHTML = commentHTML.replace('{{comment_contenu}}', comment.contenu);
-	commentHTML = commentHTML.replace('{{comment_contenu}}', comment.contenu);
-	$('#commentList').append(commentHTML);
-	//$('#commentList').html(commentHTML);
-}
 
-/**
- * affiche les modification qui viennent d'être faites
- * @param comment
- */
-
-function modifyComment(comment) {
-	
-	var commentHTML = '<fieldset data-id="{{comment_id}}">'+
-		'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' +
-		' - <a data-action="edit-comment" data-id= {{comment_id}} data-contenu={{comment_contenu}} data-auteur="{{comment_auteur}}" href=>Modifier</a> | ' +
-		'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' +
-		'</legend>' +
-		'<p class="comment-content" >{{comment_contenu}}</p> ' +
-		'</fieldset>';
-	//var date = new Date(année, mois[, jour[, heures[, minutes[, secondes[, millisecondes]]]]]);
-	//var datestring  = ("0" + date.getDate()).slice( -2 ) + '/' + ("0" + date.getMonth()).slice( -2 ) + '/' + date.getFullYear() + ' à ' + ("0" + date.getHours()).slice( -2 ) + 'h' + ("0" + date.getMinutes()).slice( -2 );
-	//TODO replace all:
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_id}}', comment.id.toString());
-	commentHTML = commentHTML.replace('{{comment_news}}', comment.news);
-	commentHTML = commentHTML.replace('{{comment_auteur}}', comment.auteur);
-	commentHTML = commentHTML.replace('{{comment_auteur}}', comment.auteur);
-	commentHTML = commentHTML.replace('{{comment_date}}', comment.date);
-	commentHTML = commentHTML.replace('{{comment_contenu}}', comment.contenu);
-	commentHTML = commentHTML.replace('{{comment_contenu}}', comment.contenu);
-	$( "fieldset[data-id=" + comment.id + "]" ).replaceWith( $( commentHTML ));
-	//$('#commentList').html(commentHTML);
-}
 
 

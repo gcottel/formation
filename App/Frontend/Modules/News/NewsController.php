@@ -90,6 +90,8 @@ class NewsController extends BackController
 		$this->page->addVar('commentListDelete', $commentListDelete);
 		$commentListUpdate = $manager->getListUpdate(0,$nbCommentDisplay, $news);
 		$this->page->addVar('commentListUpdate', $commentListUpdate);
+		$commentListAdd = $manager->getListAdd(0,$nbCommentDisplay, $news);
+		$this->page->addVar('commentListAdd', $commentListAdd);
 		
 	}
     

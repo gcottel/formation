@@ -58,7 +58,7 @@ class CommentsManagerPDO extends CommentsManager
     protected function modify(Comment $comment)
     {
 		date_default_timezone_set('Europe/Paris');
-        $q = $this->dao->prepare('UPDATE comments SET auteur = :auteur, contenu = :contenu, date = :date WHERE id = :id');
+        $q = $this->dao->prepare('UPDATE comments SET auteur = :auteur, contenu = :contenu, date = :date, state = 3 WHERE id = :id');
 	
 		$date = date("Y-m-d H:i:s");
 		$q->bindValue('date', $date);
@@ -108,7 +108,7 @@ class CommentsManagerPDO extends CommentsManager
 	public function getList($debut = -1, $limite = -1, $news)
 	{
 		
-		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE news = :news AND state = 1 ORDER BY id';
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE news = :news AND (state = 1 OR state = 3) ORDER BY id DESC';
 		date_default_timezone_set('Europe/Paris');
 		
 		if ($debut != -1 || $limite != -1)
@@ -185,7 +185,7 @@ class CommentsManagerPDO extends CommentsManager
 	public function getListUpdate($debut = -1, $limite = -1, $news)
 	{
 		
-		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 1 ';
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 3 ';
 		date_default_timezone_set('Europe/Paris');
 		
 		if ($debut != -1 || $limite != -1)
@@ -213,6 +213,42 @@ class CommentsManagerPDO extends CommentsManager
 		$q->closeCursor();
 		
 		return $commentListUpdate;
+		
+		
+	}
+	
+	
+	public function getListAdd($debut = -1, $limite = -1, $news)
+	{
+		
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 1 ';
+		date_default_timezone_set('Europe/Paris');
+		
+		if ($debut != -1 || $limite != -1)
+		{
+			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+		}
+		
+		$date = date("Y-m-d H:i:s");
+		
+		
+		$q = $this->dao->prepare($sql);
+		$q->bindValue(':news', $news, \PDO::PARAM_INT);
+		$q->bindValue(':date', $date);
+		$q->execute();
+		
+		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
+		
+		$commentListAdd = $q->fetchAll();
+		
+		foreach ($commentListAdd as $comment)
+		{
+			$comment->setDate(new \DateTime($comment->date()));
+		}
+		
+		$q->closeCursor();
+		
+		return $commentListAdd;
 		
 		
 	}

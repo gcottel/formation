@@ -11,6 +11,6 @@
  * @var array(\Entity\Comment) $commentListUpdate
  */
 
-ob_end_flush();
 
-return [$commentListDelete, $commentListUpdate];
+
+return ['comment_deleted_a' => $commentListDelete, 'comment_updated_a' => $commentListUpdate, 'comment_added_a' => $commentListAdd];
