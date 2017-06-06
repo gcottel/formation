@@ -43,7 +43,7 @@ $(document).ready($(function() {
 		{
 			console.log('début');
 			var news = $( 'input[value="Voir plus"]').data('id');
-			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay;
+			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + nbCommentDisplay; //requete pour savoir ce qu'il y a à refresh
 			$.ajax( {
 				type     : 'POST',
 				url      : _url_to_refresh_comment,
@@ -173,6 +173,7 @@ $(document).ready($(function() {
 			var auteur  = $( "[name='auteur']" ).val();
 			var id = $( 'input[value="Modifier"]').data('id');
 			var postdata = $( this ).serialize()+ '&id=' + id;
+			console.log(postdata);
 			$.ajax( {
 				type     : $( this ).attr( 'method' ),
 				url      : _url_to_update_comment,
@@ -183,9 +184,12 @@ $(document).ready($(function() {
 				},
 				success  : function( data ) {
 					modifyComment( data.contenu );
-					$("form")[0].reset();
+					console.log(data.contenu);
+					$("form")[0].reset(); // réinitialise le contenu
 					$("form")[1].reset();
-					$( 'input[value="Modifier"]' ).replaceWith( $( '<input type="submit" value="Commenter"/>' )); // reset fonctionne pas: ?
+					$('form').get(0).setAttribute('action', _url_to_insert_comment); //réinitialise l'action
+					$('form').get(1).setAttribute('action', _url_to_insert_comment);
+					$( 'input[value="Modifier"]' ).replaceWith( $( '<input type="submit" value="Commenter"/>' )); // réinitialise l'affichage du bouton
 				}
 				
 			} );
@@ -212,9 +216,8 @@ $(document).ready($(function() {
 		$(':text').val(auteur);
 		$('textarea[name=contenu]').val(contenu);
 		$( 'input[value="Commenter"]' ).replaceWith( $( '<input type="submit" value="Modifier" data-id=' + id + ' />' ));
-		$( 'input[value="Modifier"]' ).replaceWith( $( '<input type="submit" value="Modifier" data-id=' + id + ' />' )); // sert a pouvoir faire une deuxième modification sans rafraichir
-		$('form').get(0).setAttribute('action', '/comment-update-' + id + '.json');
-		$('form').get(1).setAttribute('action', '/comment-update-' + id + '.json');
+		$('form').get(0).setAttribute('action', _url_to_update_comment);
+		$('form').get(1).setAttribute('action', _url_to_update_comment);
 		
 		
 	});
@@ -239,7 +242,7 @@ $(document).ready($(function() {
 			},
 			success: function( data ) {
 				console.log('click sur remove du commentaire' + data.contenu);
-				$( "fieldset[data-id=" + data.contenu + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ));
+				$( "fieldset[data-id=" + data.contenu + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
 			}
 			
 		});
@@ -283,14 +286,13 @@ $(document).ready($(function() {
 	 * @param comments
 	 */
 	function actualiserCommentsDelete(comments) {
-		
-		if(typeof(comments) == 'undefined')
+		if((typeof(comments) == 'undefined') || (comments.length == 0))
 		{
 			return;
 		}
 		else {
 			$( comments ).each( function() {
-				$( "fieldset[data-id=" + data.contenu + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ));
+				$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
 			});
 		}
 		
@@ -303,7 +305,6 @@ $(document).ready($(function() {
 	 * @param comments
 	 */
 	function actualiserCommentsUpdate(comments) {
-		
 		if(typeof(comments) == 'undefined')
 		{
 			return;
@@ -327,7 +328,7 @@ $(document).ready($(function() {
 				commentHTML     = commentHTML.replace( '{{comment_date}}', this.date );
 				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
 				commentHTML     = commentHTML.replace( '{{comment_contenu}}', this.contenu );
-				$( "fieldset[data-id=" + comment.id + "]" ).replaceWith( $( commentHTML ));
+				$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( commentHTML ));
 			});
 		}
 		

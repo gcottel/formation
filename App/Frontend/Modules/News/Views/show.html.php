@@ -42,5 +42,6 @@ if ( empty( $comments ) ) {
 	var _url_to_update_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'UpdateCommentJson', [], 'json' ) ?>";
 	var _url_to_show_more_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'ShowMoreJson', [], 'json' ) ?>";
 	var _url_to_refresh_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'RefreshJson', [], 'json' ) ?>";
+	var _url_to_insert_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'insertCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>";
 </script>
 

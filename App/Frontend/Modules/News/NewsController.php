@@ -87,9 +87,9 @@ class NewsController extends BackController
 		$nbCommentDisplay = $request->postData('nbCommentDisplay');
 		$manager = $this->managers->getManagerOf('Comments');
 		$commentListDelete = $manager->getListDelete(0,$nbCommentDisplay, $news);
-		$this->page->addVar('commentList', $commentListDelete);
+		$this->page->addVar('commentListDelete', $commentListDelete);
 		$commentListUpdate = $manager->getListUpdate(0,$nbCommentDisplay, $news);
-		$this->page->addVar('commentList', $commentListUpdate);
+		$this->page->addVar('commentListUpdate', $commentListUpdate);
 		
 	}
     
@@ -367,11 +367,7 @@ class NewsController extends BackController
 	public static function getLinkToShow( News $News ) {
 		return RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $News->id() ]);
 	}
-	
-	public function executeUpdateCommentFormJson( HTTPRequest $request )
-	{
-		
-	}
+
 	
 	
 	public function executeUpdateCommentJson( HTTPRequest $request )
