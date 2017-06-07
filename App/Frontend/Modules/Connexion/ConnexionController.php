@@ -1,6 +1,7 @@
 <?php
 namespace App\Frontend\Modules\Connexion;
 
+use App\Frontend\FrontendController;
 use Model\UserManager;
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
@@ -9,7 +10,7 @@ use \FormBuilder\UserFormBuilder;
 use \OCFram\FormHandler;
 use \OCFram\RouterFactory;
 
-class ConnexionController extends BackController
+class ConnexionController extends FrontendController
 {
     public function executeIndex(HTTPRequest $request)
     {

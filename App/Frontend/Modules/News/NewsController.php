@@ -1,6 +1,8 @@
 <?php
 namespace App\Frontend\Modules\News;
 
+use App\Frontend\addButtonToPage;
+use App\Frontend\FrontendController;
 use \OCFram\BackController;
 use \OCFram\HTTPRequest;
 use \Entity\Comment;
@@ -14,8 +16,10 @@ use \FormBuilder\CommentFormUserBuilder;
 
 //require \Mobile_Detect;
 
-class NewsController extends BackController
+class NewsController extends FrontendController
 {
+	use addButtonToPage;
+	
     public function executeIndex(HTTPRequest $request)
     {
         $nombreNews = $this->app->config()->get('nombre_news');
@@ -42,6 +46,8 @@ class NewsController extends BackController
 
         // On ajoute la variable $listeNews à la vue.
         $this->page->addVar('listeNews', $listeNews);
+        
+        //$this->addButtonToPage($this->page());
     }
 
     public function executeShow(HTTPRequest $request)
@@ -421,5 +427,7 @@ class NewsController extends BackController
 			$this->page->addVar('errors', 'Une erreur est survenue');
 		}
 	}
+	
+	
 
 }

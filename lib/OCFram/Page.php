@@ -45,14 +45,6 @@ class Page extends ApplicationComponent
 		}
 		
     }
-	
-    private function getBouton($name)
-	{
-		$bouton_xml = $this->app->config()->get($name);
-		list($app, $module, $action, $name) = explode(',', $bouton_xml);
-		$bouton_connexion = ['app'=>$app, 'module'=>$module, 'action'=>$action, 'name'=>$name];
-		return $bouton_connexion;
-	}
     
 	private function getGeneratedPageHTML() {
 		if ( !file_exists( $this->contentFile ) ) {
@@ -66,26 +58,6 @@ class Page extends ApplicationComponent
 		ob_start();
 		require $this->contentFile;
 		$content = ob_get_clean();
-		
-		if ($this->app->name() == 'Frontend')
-		{
-			$bouton_connexion = $this->getBouton('bouton_connexion');
-			$bouton_logout = $this->getBouton('bouton_logout');
-			$bouton_mynews = $this->getBouton('bouton_mynews');
-			$bouton_ajouterunenews = $this->getBouton('bouton_ajouterunenews');
-			$bouton_signin = $this->getBouton('bouton_signin');
-			
-			if ( $user->isAuthenticated() )
-			{
-				$List_bouton_a = [$bouton_mynews, $bouton_ajouterunenews, $bouton_logout];
-				$this->addVar('List_bouton_a', $List_bouton_a);
-			}
-			else
-			{
-				$List_bouton_a = [$bouton_connexion, $bouton_signin];
-				$this->addVar('List_bouton_a', $List_bouton_a);
-			}
-		}
 				
 		ob_start();
 		require __DIR__ . '/../../App/' . $this->app->name() . '/Templates/layout.html.php';

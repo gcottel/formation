@@ -29,9 +29,7 @@
 			<nav>
 				<ul>
 					<li><a href="/">Accueil</a></li>
-					<?php //$AttributMenu_a = [new AttributMenu(['app'=>'Frontend', 'module'=>'Connexion', 'action'=>'index', 'name'=>'Connexion'])]; //TODO: le mettre ailleur + création auto
-					foreach ( $List_bouton_a as $Bouton_a ): ; ?>
-						
+					<?php foreach ( $List_bouton_a as $Bouton_a ): ; ?>
 						<li><a href="<?= \OCFram\RouterFactory::getRouter($Bouton_a['app'])->getUrl($Bouton_a['module'], $Bouton_a['action'] ) ?>"><?= $Bouton_a['name']?></a></li>
 					<?php endforeach; ?>
 				</ul>
