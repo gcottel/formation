@@ -2,6 +2,7 @@
 namespace App\Frontend;
 
 use \OCFram\Application;
+use OCFram\AttributMenu;
 
 class FrontendApplication extends Application
 {
@@ -16,9 +17,12 @@ class FrontendApplication extends Application
     {
         $controller = $this->getController();
         $controller->execute();
-
+	
 
         $this->httpResponse->setPage($controller->page());
+		
+		
         $this->httpResponse->send();
     }
+
 }
