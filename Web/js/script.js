@@ -42,9 +42,9 @@ $(document).ready($(function() {
 		function refresh ()
 		{
 			console.log('début');
-			var lastid = $('fieldset').data('id');
 			var news = $( 'input[value="Voir plus"]').data('id');
-			var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + $('fieldset[data-action="Comment"]').length; //requete pour savoir ce qu'il y a à refresh
+			var Lastid = getLastId();
+			var postdata = $( this ).serialize()+ '&news=' + news + '&Lastid=' + Lastid; //requete pour savoir ce qu'il y a à refresh
 			// TODO remplacer nombre de comment affiché par l'id du denrier
 			$.ajax( {
 				type     : 'POST',
@@ -66,6 +66,20 @@ $(document).ready($(function() {
 			console.log('fin');
 			
 		}, 10000);
+	
+	function getLastId()
+	{
+		var Fieldlist_a = $('fieldset[data-action="Comment"]');
+		var Lastid = $('fieldset').data('id');
+		Fieldlist_a.each(function() {
+			if ($(this).data('id')<Lastid)
+			{
+				Lastid = $(this).data('id');
+			}
+		});
+		return Lastid;
+	}
+	
 	
 	$(document).on('click','[data-action="voir-plus"]', function(event) {
 		
@@ -96,7 +110,8 @@ $(document).ready($(function() {
 		}*/
 		
 		var news = $( 'input[value="Voir plus"]').data('id');
-		var postdata = $( this ).serialize()+ '&news=' + news + '&nbCommentDisplay=' + $('fieldset[data-action="Comment"]').length;
+		var Lastid = getLastId();
+		var postdata = $( this ).serialize()+ '&news=' + news + '&Lastid=' + Lastid;
 		$.ajax( {
 			type     : 'POST',
 			url      : _url_to_show_more_comment,

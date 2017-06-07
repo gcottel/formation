@@ -105,19 +105,30 @@ class CommentsManagerPDO extends CommentsManager
 	}
 	
 	
-	public function getList($debut = -1, $limite = -1, $news)
+	public function getList($Lastid, $limite = -1, $news)
 	{
+		if ($Lastid == 0 || $Lastid == null)
+		{
+			$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE news = :news AND (state = 1 OR state = 3) ORDER BY id DESC';
+		}
+		else
+		{
+			$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE id < :id AND news = :news AND (state = 1 OR state = 3) ORDER BY id DESC';
+		}
 		
-		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE news = :news AND (state = 1 OR state = 3) ORDER BY id DESC';
 		date_default_timezone_set('Europe/Paris');
 		
-		if ($debut != -1 || $limite != -1)
+		if ($limite != -1)
 		{
-			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
+			$sql .= ' LIMIT '.(int) $limite;
 		}
 		
 		$q = $this->dao->prepare($sql);
 		$q->bindValue(':news', $news, \PDO::PARAM_INT);
+		if ($Lastid != 0)
+		{
+			$q->bindValue(':id', $Lastid, \PDO::PARAM_INT);
+		}
 		$q->execute();
 		
 		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
@@ -136,7 +147,7 @@ class CommentsManagerPDO extends CommentsManager
 		
 	}
 	
-	public function getListDelete($debut = -1, $limite = -1, $news)
+	public function getListDelete($Lastid, $news)
 	{
 		date_default_timezone_set('Europe/Paris');
 		/*
@@ -151,18 +162,15 @@ class CommentsManagerPDO extends CommentsManager
 		$aa = $p->fetchAll();
 		var_dump($aa);*/
 		
-		$sql = 'SELECT id FROM comments WHERE news = :news AND state = 2 AND TIMESTAMPDIFF(second, date, :date) < 10 ';
+		$sql = 'SELECT id FROM comments WHERE id > :id AND news = :news AND state = 2 AND TIMESTAMPDIFF(second, date, :date) < 10 ';
 		
 		
-		if ($debut != -1 || $limite != -1)
-		{
-			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
-		}
 		
 		$date = date("Y-m-d H:i:s");
 		$q = $this->dao->prepare($sql);
 		$q->bindValue(':news', $news, \PDO::PARAM_INT);
 		$q->bindValue(':date', $date);
+		$q->bindValue(':id', $Lastid);
 		$q->execute();
 		
 		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
@@ -182,16 +190,12 @@ class CommentsManagerPDO extends CommentsManager
 	}
 	
 	
-	public function getListUpdate($debut = -1, $limite = -1, $news)
+	public function getListUpdate($Lastid, $news)
 	{
 		
-		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 3 ';
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE id > :id AND TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 3 ';
 		date_default_timezone_set('Europe/Paris');
 		
-		if ($debut != -1 || $limite != -1)
-		{
-			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
-		}
 		
 		$date = date("Y-m-d H:i:s");
 
@@ -199,6 +203,7 @@ class CommentsManagerPDO extends CommentsManager
 		$q = $this->dao->prepare($sql);
 		$q->bindValue(':news', $news, \PDO::PARAM_INT);
 		$q->bindValue(':date', $date);
+		$q->bindValue(':id', $Lastid);
 		$q->execute();
 		
 		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
@@ -218,23 +223,20 @@ class CommentsManagerPDO extends CommentsManager
 	}
 	
 	
-	public function getListAdd($debut = -1, $limite = -1, $news)
+	public function getListAdd($Lastid, $news)
 	{
 		
-		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 1 ';
+		$sql = 'SELECT id, news, auteur, contenu, date FROM comments WHERE id > :id AND TIMESTAMPDIFF(second, date, :date) < 10 AND news = :news AND state = 1 ';
 		date_default_timezone_set('Europe/Paris');
 		
-		if ($debut != -1 || $limite != -1)
-		{
-			$sql .= ' LIMIT '.(int) $limite.' OFFSET '.(int) $debut;
-		}
-		
+
 		$date = date("Y-m-d H:i:s");
 		
 		
 		$q = $this->dao->prepare($sql);
 		$q->bindValue(':news', $news, \PDO::PARAM_INT);
 		$q->bindValue(':date', $date);
+		$q->bindValue(':id', $Lastid);
 		$q->execute();
 		
 		$q->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\Entity\Comment');
