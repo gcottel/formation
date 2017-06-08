@@ -287,8 +287,40 @@ $(document).ready($(function() {
 				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} href=>Modifier</a> | ' +
 					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' };
 			commentHTML = commentHTML +	'</legend>' +
-				'<p class="comment-content" >{{comment_contenu}}</p> ' +
+				'<p class="comment-content" >' +
+				'<br>';
+				var Content = this.contenu.replace("(\r\n|\n|\r)", ' ');
+				var Content_a = Content.split(" ");
+				Content_a.forEach(function(content){
+					content = content.trim();
+					// TODO regex pour l'url youtube
+					if ((content.match(/https:\/\/www.youtube.com\/watch\?v=/g)).length != 0)
+					{
+						commentHTML = commentHTML + '<a href={{content}}>>Lien Youtube</a>';
+						commentHTML = commentHTML.replace('{{content}}', content );
+						commentHTML = commentHTML +
+							'<object width="425" height="344">' +
+							'<param name="movie" value="http://www.youtube.com/v/{{subcontent}}"></param>'+
+							'<param name="allowFullScreen" value="true"></param>' +
+							'<param name="allowscriptaccess" value="always"></param>' +
+ 							'<embed src="http://www.youtube.com/v/{{subcontent}}" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed>' +
+							'</object>';
+						commentHTML = commentHTML.replace('{{subcontent}}', content.substr(32) );
+						commentHTML = commentHTML.replace('{{subcontent}}', content.substr(32) );
+						
+						//this.contenu = this.contenu.replace(content, '');
+					}
+										
+				});
+				commentHTML = commentHTML +
+				'<br>' +
+				'{{comment_contenu}}' +
+				'</p>' +
 				'</fieldset>';
+				
+			
+			
+			
 			//TODO replace all:
 			commentHTML = commentHTML.replace( /{{comment_id}}/g, this.id.toString() );
 			commentHTML = commentHTML.replace( '{{comment_news}}', this.news );

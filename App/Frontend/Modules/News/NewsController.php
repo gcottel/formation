@@ -73,14 +73,7 @@ class NewsController extends FrontendController
 		$manager = $this->managers->getManagerOf('Comments');
 		$commentList = $manager->getList(0, $nombreComment, $news->id());
         $this->page->addVar('comments', $commentList);
-        
-        /*foreach ( $commentList as $comment ):
-			if (preg_match("#^https://www.youtube.com/watch\?v=#", $comment['contenu']))
-			{
-				var_dump(substr($comment['contenu'], 32));
-				
-			}
-		endforeach; *//*
+         /*
 		var_dump($comment['contenu']);
 		if (preg_match("#63#", $comment['contenu']))
 		{
@@ -166,12 +159,59 @@ class NewsController extends FrontendController
 	
 	public function executeInsertCommentJson( HTTPRequest $request )
 	{
+		$Comment= $request->postData('contenu');
+		$Content= preg_replace("(\r\n|\n|\r)",' ',$Comment); //remplacesaut de lignes... etc par des ' '
+		$Content_a = explode(' ', $Content);
+		$FinalContent ='';
+		require_once 'C:\Users\gcottel\Desktop\UwAmp\www\formation\vendor\curl\curl\src\Curl\Curl.php';
+		
+		foreach ( $Content_a as $content ):
+			$content = trim($content); // supprime les ' '
+						
+			if (preg_match("#^https://www.youtube.com/watch\?v=#", $content) AND filter_var($content, FILTER_VALIDATE_URL)) // reconnais url youtube
+			{
+				var_dump('aaaaa');
+				$curl = new \Curl\Curl();
+				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+				$curl->get($content);
+				var_dump($curl);
+				if ($curl->response_headers[0] != 'HTTP/1.1 200 OK') //test si url reachable, si non, remplacement du lien
+				{
+					$content = '[Lien youtube périmé]';
+				}
+			}
+			
+			else if ((preg_match("#^https://youtu.be/#", $content)) AND filter_var($content, FILTER_VALIDATE_URL)) // autre type de lien (lien de partage)
+			{
+				$curl = new \Curl\Curl();
+				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+				$curl->get($content);
+				if (preg_match("#Location#", $curl->response_headers[1])) //url de redirection faite par le lien de partage, Location peut être en première ou deuxième position dans la response
+				{
+					$response = $curl->response_headers[1];
+				}
+				else
+				{
+					$response = $curl->response_headers[2];
+				}
+				$response = substr($response, strlen(-$response) + 9); //supression de 'Location '
+				if ($curl->response_headers[0] == 'HTTP/1.1 302 Found') //
+				{
+					$content = $response; //remplace le lien de partage part le lien de redirection
+				}
+				else
+				{
+					$content = '[Lien youtube périmé]';
+				}
+			}
+			$FinalContent = $FinalContent.$content.' ';
+		endforeach;
 		
 		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'news' => $request->getData('news'),
 				'auteur' => 'Anonyme',
-				'contenu' => $request->postData('contenu')
+				'contenu' => $FinalContent
 			] );
 			
 			
@@ -180,7 +220,7 @@ class NewsController extends FrontendController
 			$comment = new Comment( [
 				'news' => $request->getData('news'),
 				'auteur' => $this->app->user()->getAttribute('User')->login(),
-				'contenu' => $request->postData('contenu')
+				'contenu' => $FinalContent
 			] );
 		}
 		else
