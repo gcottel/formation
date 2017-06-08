@@ -73,6 +73,23 @@ class NewsController extends FrontendController
 		$manager = $this->managers->getManagerOf('Comments');
 		$commentList = $manager->getList(0, $nombreComment, $news->id());
         $this->page->addVar('comments', $commentList);
+        
+        /*foreach ( $commentList as $comment ):
+			if (preg_match("#^https://www.youtube.com/watch\?v=#", $comment['contenu']))
+			{
+				var_dump(substr($comment['contenu'], 32));
+				
+			}
+		endforeach; *//*
+		var_dump($comment['contenu']);
+		if (preg_match("#63#", $comment['contenu']))
+		{
+			$comment['contenu'] = $comment['contenu'].'aaaaaaaaaaaa';
+		}*/
+		
+
+
+
     }
 	
 	public function executeShowMoreJson(HTTPRequest $request)

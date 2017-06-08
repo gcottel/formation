@@ -41,7 +41,7 @@ This part consists to add a functionnality that ask for a route to the Controlle
 * Show errors or add new comment directly if there are no error.
 * The HTTP Response of any Ajax call must be a JSON Object.
 
-# 7 - Lecture vidéo youtube des commentaires
+# 8 - Lecture vidéo youtube des commentaires
 * detection d'une url youtube (regexp)
 * récupérer le code de la vidéo
 * création de l'url de l'image miniature
