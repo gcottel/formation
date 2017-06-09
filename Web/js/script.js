@@ -169,16 +169,29 @@ $(document).ready($(function() {
 		if ($( 'input[value="Commenter"]' ).length)
 		{
 			var contenu = $( "[name='contenu']" ).val();
+			//console.log('1' + contenu);
+			//contenu = contenu.replace('\?', '\\\?');
+			//contenu = contenu.replace('\:', '\\\:');
+			//contenu = contenu.replace('\=', '\\\=');
+			//console.log('2' + contenu);
+			//console.log(contenu.match(/\//ig));
+			//contenu = contenu.replace(/\//ig, '\\\/');
+			//contenu = 'contenu='+contenu;
 			var auteur  = $( "[name='auteur']" ).val();
 			$.ajax( {
 				type     : $( this ).attr( 'method' ),
 				url      : $( this ).attr( 'action' ),
 				data     : $( this ).serialize(),
 				dataType : "json",
-				error    : function() {
+				error    : function(data, statut) {
+					console.log('error');
+					console.log(data);
+					console.log(statut);
 					$( this ).prepend( '<p>Echec</p>' );
 				},
 				success  : function( data ) {
+					console.log('success');
+					//console.log(data.contenu);
 					afficher( [data.contenu], 'ajout nouveau', -1);
 					$("form")[0].reset(); // réinitialise le formulaire
 					$("form")[1].reset();
@@ -192,7 +205,6 @@ $(document).ready($(function() {
 			var auteur  = $( "[name='auteur']" ).val();
 			var id = $( 'input[value="Modifier"]').data('id');
 			var postdata = $( this ).serialize()+ '&id=' + id;
-			console.log(postdata);
 			$.ajax( {
 				type     : $( this ).attr( 'method' ),
 				url      : _url_to_update_comment,
@@ -203,7 +215,6 @@ $(document).ready($(function() {
 				},
 				success  : function( data ) {
 					afficher( [data.contenu], 'modification', -1 );
-					console.log(data.contenu);
 					$("form")[0].reset(); // réinitialise le contenu
 					$("form")[1].reset();
 					$('form').get(0).setAttribute('action', _url_to_insert_comment); //réinitialise l'action
@@ -272,8 +283,7 @@ $(document).ready($(function() {
 	 * @param comments
 	 */
 	function afficher(comments, type, loginIfIsAuthenticated) {
-		
-		console.log(loginIfIsAuthenticated);
+
 		
 		if((typeof(comments) == 'undefined') || (comments.length == 0))
 		{
@@ -281,22 +291,33 @@ $(document).ready($(function() {
 		}
 		
 		$(comments).each( function() {
+			
+			if (type == 'suppression')
+			{
+				$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
+				return;
+			}
+			
+			
 			var commentHTML = '<fieldset data-id="{{comment_id}}" data-action="Comment">' +
 				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' ;
 			if (loginIfIsAuthenticated == -1 || loginIfIsAuthenticated == this.auteur){
 				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} href=>Modifier</a> | ' +
 					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' };
 			commentHTML = commentHTML +	'</legend>' +
-				'<p class="comment-content" >' +
-				'<br>';
+				'<br class="comment-content" >';
 				var Content = this.contenu.replace("(\r\n|\n|\r)", ' ');
+				var FinalContent = this.contenu;
+				//console.log('Content:' + Content);
 				var Content_a = Content.split(" ");
+				//console.log('Content_a:' + Content_a);
 				Content_a.forEach(function(content){
 					content = content.trim();
-					// TODO regex pour l'url youtube
-					if ((content.match(/https:\/\/www.youtube.com\/watch\?v=/g)).length != 0)
+					//console.log('content:' + content);
+					//console.log('match:' + content.match(/https:\/\/www.youtube.com\/watch\?v=/g));
+					if ((content.match(/https:\/\/www.youtube.com\/watch\?v=/g)) != null)
 					{
-						commentHTML = commentHTML + '<a href={{content}}>>Lien Youtube</a>';
+						commentHTML = commentHTML + '<a href={{content}}>>Lien Youtube</a>' + '<br>';
 						commentHTML = commentHTML.replace('{{content}}', content );
 						commentHTML = commentHTML +
 							'<object width="425" height="344">' +
@@ -304,16 +325,18 @@ $(document).ready($(function() {
 							'<param name="allowFullScreen" value="true"></param>' +
 							'<param name="allowscriptaccess" value="always"></param>' +
  							'<embed src="http://www.youtube.com/v/{{subcontent}}" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed>' +
-							'</object>';
+							'</object>'+
+							'<br>';
 						commentHTML = commentHTML.replace('{{subcontent}}', content.substr(32) );
 						commentHTML = commentHTML.replace('{{subcontent}}', content.substr(32) );
 						
-						//this.contenu = this.contenu.replace(content, '');
+						//console.log('FinalContent:' + FinalContent);
+						FinalContent = FinalContent.replace(content, '[Lien youtube ci-dessus]');
+						//console.log('FinalContent:' + FinalContent);
 					}
 										
 				});
 				commentHTML = commentHTML +
-				'<br>' +
 				'{{comment_contenu}}' +
 				'</p>' +
 				'</fieldset>';
@@ -326,7 +349,7 @@ $(document).ready($(function() {
 			commentHTML = commentHTML.replace( '{{comment_news}}', this.news );
 			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
 			commentHTML = commentHTML.replace( '{{comment_date}}', this.date );
-			commentHTML = commentHTML.replace( '{{comment_contenu}}', this.contenu );
+			commentHTML = commentHTML.replace( '{{comment_contenu}}', FinalContent );
 	
 		
 		if (type == 'ajout nouveau')
@@ -351,15 +374,27 @@ $(document).ready($(function() {
 			$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( commentHTML ));
 		}
 		
-		else if (type == 'suppression')
-		{
-			$( "fieldset[data-id=" + this.id + "]" ).replaceWith( $( '<p class="msg-flash">Commentaire supprimé</p>' ).fadeIn().delay(5000).fadeOut());
-		}
-		
 		});
 		
 		
 	}
+	
+	
+	/**
+	 * Quand passage sur la legend
+	 */
+	
+	
+	
+	$('[data-action="mouse-over"]').on("mouseover", function () {
+		console.log('okkkkkkkkkk');
+		//var ajoutHTML = '<hhide> aaaa </hhide>'
+		//$( '[data-action="mouse-over"]' ).append( ajoutHTML);
+		w = window.open('pageb.html','nom_de_ma_popup','menubar=no, scrollbars=no, top=100, left=100, width=300, height=200');
+		
+		
+	});
+	
 	
 	
 	}));

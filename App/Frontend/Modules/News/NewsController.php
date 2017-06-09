@@ -170,11 +170,11 @@ class NewsController extends FrontendController
 						
 			if (preg_match("#^https://www.youtube.com/watch\?v=#", $content) AND filter_var($content, FILTER_VALIDATE_URL)) // reconnais url youtube
 			{
-				var_dump('aaaaa');
+				//var_dump('aaaaa');
 				$curl = new \Curl\Curl();
 				$curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 				$curl->get($content);
-				var_dump($curl);
+				//var_dump($curl);
 				if ($curl->response_headers[0] != 'HTTP/1.1 200 OK') //test si url reachable, si non, remplacement du lien
 				{
 					$content = '[Lien youtube périmé]';
@@ -206,7 +206,9 @@ class NewsController extends FrontendController
 			}
 			$FinalContent = $FinalContent.$content.' ';
 		endforeach;
-		
+		$FinalContent = trim($FinalContent);
+		//var_dump($FinalContent);
+		 
 		if ( $request->method() == 'POST' AND !$this->app->user()->isAuthenticated()) {
 			$comment = new Comment( [
 				'news' => $request->getData('news'),
@@ -237,6 +239,7 @@ class NewsController extends FrontendController
 		$form = $formBuilder->form();
 		
 		$formHandler = new FormHandler( $form, $this->managers->getManagerOf( 'Comments' ), $request );
+		//var_dump('1');
 		
 		if ( $formHandler->process() ) {
 			//var_dump('0');
@@ -245,6 +248,7 @@ class NewsController extends FrontendController
 			//var_dump($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
 			//$comment->setDate($this->managers->getManagerOf( 'Comments' )->getLastDateAuthor( $request->postData( 'author' ) ));
 			$this->page->addVar( 'comment', $comment );
+			//var_dump('2');
 			//var_dump($comment);
 			$this->page->addVar( 'comment_auteur', $this->app->user()->getAttribute( 'user' )[ 'login' ] );
 			//$this->app->httpResponse()->redirect(RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'show', [ 'id' => $comment['news'] ] ));
