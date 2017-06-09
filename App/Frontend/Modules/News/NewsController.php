@@ -489,6 +489,23 @@ class NewsController extends FrontendController
 		}
 	}
 	
+	/**
+	 *
+	 *
+	 * @param HTTPRequest $request
+	 */
+	
+	public function executeqTipCommentJson( HTTPRequest $request )
+	{
+		$Lastnews_a = $this->managers->getManagerOf( 'News' )->getListTitleUser(0, 3, $request->postData( 'id' ));
+
+		for ($i = 0; $i < count($Lastnews_a); $i++) //On ne conserve que les string titre et non plus l'objet news
+		{
+			$Lastnews_a[$i] = [$Lastnews_a[$i]['id'],$Lastnews_a[$i]['titre']];
+		}
+		$this->page->addVar( 'Lastnews_a', $Lastnews_a  );
+	}
+	
 	
 
 }

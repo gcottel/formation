@@ -15,6 +15,7 @@ $BackendRouter = \OCFram\RouterFactory::getRouter('Backend');
 
     <link rel="stylesheet" href="/css/Envision.css" type="text/css" />
 	<link rel="stylesheet" href="/css/style.css" type="text/css" />
+	<link rel="stylesheet" href="/css/jquery.qtip.css" type="text/css" />
 </head>
 
 <body>
@@ -48,5 +49,6 @@ $BackendRouter = \OCFram\RouterFactory::getRouter('Backend');
 	<footer></footer>
 	<script src="/js/jquery-3.2.1.min.js"></script>
 	<script src="/js/script.js"></script>
+	<script type="text/javascript" src="/js/jquery.qtip.js"></script>
 </body>
 </html>

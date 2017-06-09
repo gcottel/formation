@@ -390,12 +390,62 @@ $(document).ready($(function() {
 		console.log('okkkkkkkkkk');
 		//var ajoutHTML = '<hhide> aaaa </hhide>'
 		//$( '[data-action="mouse-over"]' ).append( ajoutHTML);
-		w = window.open('pageb.html','nom_de_ma_popup','menubar=no, scrollbars=no, top=100, left=100, width=300, height=200');
+		
+		
 		
 		
 	});
 	
+	$('[data-toggle="tooltip"]').qtip({
+		content: {
+			text: function(event, api) {
+				$.ajax({
+					 url: _url_to_qTip_comment, // URL to the JSON file
+					 type: 'POST', // POST or GET
+					 dataType: 'json', // Tell it we're retrieving JSON
+					 data: {
+						 id: $(this).attr('id') // Pass through the ID of the current element matched by '.selector'
+					 },
+				 })
+				 .then(function(data) {
+					 /* Process the retrieved JSON object
+					  *    Retrieve a specific attribute from our parsed
+					  *    JSON string and set the tooltip content.
+					  */
+					 var content = data.contenu;
+					 console.log(data.contenu);
+					 var FinalContent ='';
+					 $(content).each(function() {
+					 	FinalContent = FinalContent + '<a href= "http://monsupersite/news-{{newsId}}" >{{newsName}} </a> ' + '   \/   ';
+						 console.log(FinalContent);
+					 	//FinalContent = FinalContent + this[1] + '\n';
+						 FinalContent = FinalContent.replace( '{{newsName}}', this[1] );
+						 FinalContent = FinalContent.replace( '{{newsId}}', this[0] );
+					 })
+					 
+					
+					 // Now we set the content manually (required!)
+					 api.set('content.text', FinalContent);
+				 }, function(xhr, status, error) {
+					 // Upon failure... set the tooltip content to the status and error value
+					 api.set('content.text', status + ': ' + error);
+				 });
+				
+				return 'Loading...' // Set some initial loading text
+			},
+			title: 'A propos:',
+			button : true
+		},
+		hide: {
+			delay: 5000
+		},
+		style: {
+			classes: 'qtip-blue qtip-shadow'
+		}
+		
+	});
 	
+
 	
 	}));
 

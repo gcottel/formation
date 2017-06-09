@@ -9,6 +9,7 @@
 		
 		<link rel="stylesheet" href="/css/Envision.css" type="text/css" />
 		<link rel="stylesheet" href="/css/style.css" type="text/css" />
+		<link rel="stylesheet" href="/css/jquery.qtip.css" type="text/css" />
 	</head>
 	
 	<body>
@@ -48,6 +49,7 @@
 			<footer></footer>
 		</div>
 		<script src="/js/jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.qtip.js"></script>
 		<script src="/js/script.js"></script>
 	</body>
 </html>

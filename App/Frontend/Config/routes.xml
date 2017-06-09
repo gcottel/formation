@@ -16,6 +16,7 @@
 	<route url="/refresh\.json" module="News" action="RefreshJson" pattern="/refresh" format="json"/>
 	<route url="/comment-update\.json" module="News" action="UpdateCommentJson" pattern="/comment-update" format="json"/>
 	<route url="/comment-delete-([0-9]+)" module="News" action="DeleteComment" vars="id" pattern="/comment-delete-{{id}}" />
+	<route url="/comment-qTip\.json" module="News" action="qTipCommentJson" pattern="/comment-qTip" format="json"/>
 	<route url="/logOut" module="Connexion" action="logOut" />
 	<route url="/connexion" module="Connexion" action="index" />
 	<route url="/signIn" module="Connexion" action="insert" />
