@@ -300,7 +300,7 @@ $(document).ready($(function() {
 			
 			
 			var commentHTML = '<fieldset data-id="{{comment_id}}" data-action="Comment">' +
-				'<legend>Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' ;
+				'<legend id="{{comment_auteur}}" data-action = "mouse-over" data-toggle="tooltip" >Posté par <strong>{{comment_auteur}}</strong> le {{comment_date}}' ;
 			if (loginIfIsAuthenticated == -1 || loginIfIsAuthenticated == this.auteur){
 				commentHTML = commentHTML +	' - <a data-action="edit-comment" data-id= {{comment_id}} href=>Modifier</a> | ' +
 					'<a data-action="remove-comment" data-id= {{comment_id}} href=>Supprimer</a> ' };
@@ -347,7 +347,7 @@ $(document).ready($(function() {
 			//TODO replace all:
 			commentHTML = commentHTML.replace( /{{comment_id}}/g, this.id.toString() );
 			commentHTML = commentHTML.replace( '{{comment_news}}', this.news );
-			commentHTML = commentHTML.replace( '{{comment_auteur}}', this.auteur );
+			commentHTML = commentHTML.replace( /{{comment_auteur}}/g, this.auteur );
 			commentHTML = commentHTML.replace( '{{comment_date}}', this.date );
 			commentHTML = commentHTML.replace( '{{comment_contenu}}', FinalContent );
 	
@@ -399,6 +399,7 @@ $(document).ready($(function() {
 	$('[data-toggle="tooltip"]').qtip({
 		content: {
 			text: function(event, api) {
+				var authorId = $(this).attr('id');
 				$.ajax({
 					 url: _url_to_qTip_comment, // URL to the JSON file
 					 type: 'POST', // POST or GET
@@ -412,20 +413,26 @@ $(document).ready($(function() {
 					  *    Retrieve a specific attribute from our parsed
 					  *    JSON string and set the tooltip content.
 					  */
-					 var content = data.contenu;
-					 console.log(data.contenu);
-					 var FinalContent ='';
-					 $(content).each(function() {
-					 	FinalContent = FinalContent + '<a href= "http://monsupersite/news-{{newsId}}" >{{newsName}} </a> ' + '   \/   ';
-						 console.log(FinalContent);
-					 	//FinalContent = FinalContent + this[1] + '\n';
-						 FinalContent = FinalContent.replace( '{{newsName}}', this[1] );
-						 FinalContent = FinalContent.replace( '{{newsId}}', this[0] );
-					 })
+					 var content = data.contenu.Lastnews_a;
+					 var login = data.contenu.loginIfIsAuthenticated;
+					 var FinalContent = '';
+					 if (login == authorId || login == -1)
+					 {
+					 	FinalContent = FinalContent + '<h2> Mes dernieres news: </h2>';
+					 }
+					 $( content ).each( function() {
+						 FinalContent = FinalContent + '<a href= "http://monsupersite/news-{{newsId}}" >{{newsName}} </a> ' + '   \/   ';
+						 console.log( FinalContent );
+						 //FinalContent = FinalContent + this[1] + '\n';
+						 FinalContent = FinalContent.replace( '{{newsName}}', this[ 1 ] );
+						 FinalContent = FinalContent.replace( '{{newsId}}', this[ 0 ] );
+					 } )
+					 
 					 
 					
 					 // Now we set the content manually (required!)
 					 api.set('content.text', FinalContent);
+					 
 				 }, function(xhr, status, error) {
 					 // Upon failure... set the tooltip content to the status and error value
 					 api.set('content.text', status + ': ' + error);
@@ -436,12 +443,24 @@ $(document).ready($(function() {
 			title: 'A propos:',
 			button : true
 		},
+		show: {
+			//event: 'mouseover'
+		 	solo: true
+			
+		},
 		hide: {
-			delay: 5000
+			fixed: true,
+			//event: 'click',
+			delay: 2000,
+			effect: function() {
+				$(this).slideUp();
+			}
+			
 		},
 		style: {
 			classes: 'qtip-blue qtip-shadow'
 		}
+		
 		
 	});
 	

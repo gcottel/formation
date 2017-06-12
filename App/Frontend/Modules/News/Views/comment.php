@@ -1,5 +1,5 @@
 <fieldset data-id="<?=$comment['id']?>" data-action="Comment">
-	<legend id="<?=$comment['auteur']?>" data-action = "mouse-over" data-toggle="tooltip" title="Hooray!">
+	<legend id="<?=$comment['auteur']?>" data-action = "mouse-over" data-toggle="tooltip">
 		Posté par <strong><?= htmlspecialchars($comment['auteur']) ?></strong> le <?= $comment['date']->format('d/m/Y à H\hi') ?>
 		<?php if ($user->isAdmin() OR ($user->isAuthenticated() AND $user->login() == $comment['auteur'])) { ?> -
 			<a data-action="edit-comment" data-id= "<?=$comment['id']?>" href="<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'updateComment', [ 'id' => $comment[ 'id' ] ] ) ?>">Modifier</a> |

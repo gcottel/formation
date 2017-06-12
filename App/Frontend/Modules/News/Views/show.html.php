@@ -45,4 +45,7 @@ if ( empty( $comments ) ) {
 	var _url_to_insert_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'insertCommentJson', [ 'news' => $news[ 'id' ] ], 'json' ) ?>";
 	var _url_to_qTip_comment = "<?= \OCFram\RouterFactory::getRouter( 'Frontend' )->getUrl( 'News', 'qTipCommentJson', [], 'json' ) ?>";
 </script>
+<link rel="stylesheet" href="/css/Envision.css" type="text/css" />
+<link rel="stylesheet" href="/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/css/jquery.qtip.css" type="text/css" />
 
